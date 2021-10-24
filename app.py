@@ -1,5 +1,5 @@
-from flask import Flask, request
-from flask_restful import Resource, Api
+from flask import Flask
+from flask_restful import Resource, Api, reqparse
 from flask_jwt import JWT, jwt_required
 from security import autenticazione, identita
 
@@ -20,6 +20,16 @@ class Oggetto(Resource):
     """
     Classe API oggetto
     """
+    # Questo è una proprietà statica che appartiene alla classe e non all'istanza
+    # Permette di fare il parsing delle proprietà dell'oggetto
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        'price',
+        type=float,
+        required=True,
+        help="Questo campo non può essere lasciato vuoto"
+    )
+
     @jwt_required()
     def get(self, nome: str):
         oggetto_cercato = next(filter(lambda oggetto: oggetto['name'] == nome, oggetti), None)
@@ -32,7 +42,7 @@ class Oggetto(Resource):
         if next(filter(lambda oggetto: oggetto['name'] == nome, oggetti), None):
             return {'errore': f"E' già presente un oggetto chiamato {nome}."}, 409
 
-        dati = request.get_json()
+        dati = Oggetto.parser.parse_args()
         nuovo_oggetto = {'nome': nome, 'prezzo': dati.get('prezzo', 0)}
         oggetti.append(nuovo_oggetto)
         return nuovo_oggetto, 201
@@ -48,7 +58,7 @@ class Oggetto(Resource):
 
     @jwt_required()
     def put(self, nome):
-        dati = request.get_json()
+        dati = Oggetto.parser.parse_args()
         oggetto_esistente = next(filter(lambda oggetto: oggetto['name'] == nome, oggetti), None)
 
         if oggetto_esistente:
