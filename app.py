@@ -33,9 +33,31 @@ class Oggetto(Resource):
             return {'errore': f"E' già presente un oggetto chiamato {nome}."}, 409
 
         dati = request.get_json()
-        oggetto = {'nome': nome, 'prezzo': dati.get('prezzo', 0)}
-        oggetti.append(oggetto)
-        return oggetto, 201
+        nuovo_oggetto = {'nome': nome, 'prezzo': dati.get('prezzo', 0)}
+        oggetti.append(nuovo_oggetto)
+        return nuovo_oggetto, 201
+
+    @jwt_required()
+    def delete(self, nome):
+        global oggetti
+        if next(filter(lambda oggetto: oggetto['name'] == nome, oggetti), None):
+            oggetti = list(filter(lambda oggetto: oggetto['nome'] != nome, oggetti))
+            return {'messaggio': 'Oggetto eliminato'}
+        else:
+            return {'errore': f"Non è presente un oggetto chiamato {nome}."}, 404
+
+    @jwt_required()
+    def put(self, nome):
+        dati = request.get_json()
+        oggetto_esistente = next(filter(lambda oggetto: oggetto['name'] == nome, oggetti), None)
+
+        if oggetto_esistente:
+            oggetto_esistente.update(dati)
+            return oggetto_esistente, 200
+        else:
+            nuovo_oggetto = {'nome': nome, 'prezzo': dati.get('prezzo', 0)}
+            oggetti.append(nuovo_oggetto)
+            return nuovo_oggetto, 201
 
 
 class Oggetti(Resource):
