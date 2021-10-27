@@ -1,7 +1,6 @@
 """
 Classe utente dell'applicazione
 """
-import sqlite3
 from flask_restful import Resource, reqparse
 
 from modelli.utente import ModelloUtente
@@ -25,16 +24,11 @@ class RegistraUtente(Resource):
     def post(self):
         dati = RegistraUtente.parser.parse_args()
         nome = dati['nome']
+        nuovo_utente = ModelloUtente(0, nome, dati['password'])
 
         if ModelloUtente.trova_per_nome(nome):
             return {'errore': f"E' già presente un utente chiamato {nome}."}, 409
 
-        connessione = sqlite3.connect('./db/dati.db')
-        cursore = connessione.cursor()
-
-        query = "INSERT INTO utenti VALUES (NULL, ?, ?)"
-        cursore.execute(query, (nome, dati['password']))
-        cursore.commit()
-        cursore.close()
+        nuovo_utente.inserisci()
 
         return {'messaggio': 'Utente creato correttamente'}, 201
