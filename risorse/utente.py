@@ -24,11 +24,11 @@ class RegistraUtente(Resource):
     def post(self):
         dati = RegistraUtente.parser.parse_args()
         nome = dati['nome']
-        nuovo_utente = ModelloUtente(0, nome, dati['password'])
+        nuovo_utente = ModelloUtente(nome, dati['password'])
 
         if ModelloUtente.trova_per_nome(nome):
             return {'errore': f"E' già presente un utente chiamato {nome}."}, 409
 
-        nuovo_utente.inserisci()
+        nuovo_utente.salva()
 
         return {'messaggio': 'Utente creato correttamente'}, 201
