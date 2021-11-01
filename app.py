@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_jwt import JWT
 from flask_restful import Api
@@ -9,7 +11,8 @@ from risorse.utente import RegistraUtente
 from security import autenticazione, identita
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/dati.db'
+stringa_connessione = os.environ.get('DATABASE_URL', 'sqlite:///db/dati.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = stringa_connessione.replace('postgres:', 'postgresql:', 1)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'ChiaveSegretaPerIlJWT!!!1!g'
 api = Api(app)
