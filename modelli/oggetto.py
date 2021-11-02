@@ -25,6 +25,10 @@ class ModelloOggetto(database.Model):
     def trova_per_nome(cls, nome) -> "ModelloOggetto":
         return cls.query.filter_by(nome=nome).first()
 
+    @classmethod
+    def trova_tutti(cls):
+        return cls.query.all()
+
     def json(self) -> dict:
         return {"nome": self.nome, "prezzo": self.prezzo}
 

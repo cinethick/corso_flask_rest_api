@@ -54,4 +54,4 @@ class Negozio(Resource):
 class Negozi(Resource):
     @jwt_required()
     def get(self):
-        return {'negozi': [negozio.json() for negozio in ModelloNegozio.query.all()]}
+        return {'negozi': [negozio.json() for negozio in ModelloNegozio.trova_tutti()]}

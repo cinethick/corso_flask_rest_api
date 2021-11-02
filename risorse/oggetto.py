@@ -83,4 +83,4 @@ class Oggetto(Resource):
 class Oggetti(Resource):
     @jwt_required()
     def get(self):
-        return {'oggetti': [oggetto.json() for oggetto in ModelloOggetto.query.all()]}
+        return {'oggetti': [oggetto.json() for oggetto in ModelloOggetto.trova_tutti()]}
