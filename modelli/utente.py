@@ -22,7 +22,7 @@ class ModelloUtente(database.Model):
         return cls.query.filter_by(id=_id).first()
 
     def json(self) -> dict:
-        return {"nome": self.nome, "password": self.password}
+        return {"id": self.id, "nome": self.nome}
 
     def salva(self):
         database.session.add(self)

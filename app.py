@@ -5,7 +5,7 @@ from flask_restful import Api
 from db.gestione import database
 from risorse.negozio import Negozi, Negozio
 from risorse.oggetto import Oggetto, Oggetti
-from risorse.utente import RegistraUtente
+from risorse.utente import RegistraUtente, Utente
 from security import autenticazione, identita
 
 app = Flask(__name__)
@@ -29,6 +29,7 @@ api.add_resource(Oggetti, '/oggetti')
 api.add_resource(Negozio, '/negozio/<string:nome>')
 api.add_resource(Negozi, '/negozi')
 api.add_resource(RegistraUtente, '/registra')
+api.add_resource(Utente, '/utente/<int:id_utente>')
 
 if __name__ == '__main__':
     app.run()

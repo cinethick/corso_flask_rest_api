@@ -21,8 +21,9 @@ class RegistraUtente(Resource):
         help="Questo campo non può essere lasciato vuoto"
     )
 
-    def post(self):
-        dati = RegistraUtente.parser.parse_args()
+    @classmethod
+    def post(cls):
+        dati = cls.parser.parse_args()
         nome = dati['nome']
         nuovo_utente = ModelloUtente(**dati)
 
@@ -32,3 +33,26 @@ class RegistraUtente(Resource):
         nuovo_utente.salva()
 
         return {'messaggio': 'Utente creato correttamente'}, 201
+
+
+class Utente(Resource):
+    @classmethod
+    def get(cls, id_utente: int):
+        utente = ModelloUtente.trova_per_id(id_utente)
+        if utente:
+            return utente.json()
+        return {"errore": "Utente non trovato"}, 404
+
+    @classmethod
+    def delete(cls, id_utente: int):
+        utente = ModelloUtente.trova_per_id(id_utente)
+        if utente:
+            try:
+                utente.elimina()
+            except:
+                return {'errore': 'Si è verificato un errore eliminando l\'utente.'}, 500
+
+            return {'messaggio': 'Utente eliminato.'}
+        else:
+            return {'errore': 'Utente non trovato.'}, 404
+
