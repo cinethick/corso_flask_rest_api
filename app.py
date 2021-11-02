@@ -11,6 +11,7 @@ from security import autenticazione, identita
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/dati.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['PROPAGATE_EXCEPTIONS'] = True
 app.secret_key = 'ChiaveSegretaPerIlJWT!!!1!g'
 api = Api(app)
 database.init_app(app)
