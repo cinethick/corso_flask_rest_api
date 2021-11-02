@@ -1,9 +1,9 @@
 """
 Questo modulo contiene il necessario per verificare l'autenticità degli utenti
-Sono stati temporaneamente create le liste utente
 """
 
 from hmac import compare_digest
+
 from modelli.utente import ModelloUtente
 
 
@@ -17,3 +17,19 @@ def identita(payload):
     id_utente = payload['identity']
     utente = ModelloUtente.trova_per_id(id_utente)
     return utente
+
+
+# @jwt.auth_response_handler
+# def gestore_risposta(token_accesso, utente):
+#     return jsonify({
+#         "token_accesso": token_accesso.decode('utf-8'),
+#         "id_utente": utente.id
+#     })
+
+
+# @jwt.error_handler
+# def gestore_errori(errore):
+#     return jsonify({
+#         "messaggio": errore.description,
+#         "codice": errore.status_code
+#     }), errore.status_code
