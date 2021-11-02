@@ -24,7 +24,7 @@ class RegistraUtente(Resource):
     def post(self):
         dati = RegistraUtente.parser.parse_args()
         nome = dati['nome']
-        nuovo_utente = ModelloUtente(nome, dati['password'])
+        nuovo_utente = ModelloUtente(**dati)
 
         if ModelloUtente.trova_per_nome(nome):
             return {'errore': f"E' già presente un utente chiamato {nome}."}, 409

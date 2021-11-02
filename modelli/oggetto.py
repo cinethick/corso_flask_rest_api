@@ -30,7 +30,7 @@ class ModelloOggetto(database.Model):
         return cls.query.all()
 
     def json(self) -> dict:
-        return {"nome": self.nome, "prezzo": self.prezzo}
+        return {"id": self.id, "nome": self.nome, "prezzo": self.prezzo, "negozio_id": self.negozio_id}
 
     def salva(self):
         database.session.add(self)

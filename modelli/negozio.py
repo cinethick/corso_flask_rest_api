@@ -25,7 +25,7 @@ class ModelloNegozio(database.Model):
         return cls.query.all()
 
     def json(self) -> dict:
-        return {"nome": self.nome, "oggetti": [oggetto.json() for oggetto in self.oggetti.all()]}
+        return {"id": self.id, "nome": self.nome, "oggetti": [oggetto.json() for oggetto in self.oggetti.all()]}
 
     def salva(self):
         database.session.add(self)
