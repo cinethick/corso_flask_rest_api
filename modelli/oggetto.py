@@ -14,7 +14,6 @@ class ModelloOggetto(database.Model):
 
     # Relazione con altra tabella (padre)
     negozio_id = database.Column(database.Integer, database.ForeignKey('negozi.id'))
-    negozio = database.relationship("ModelloNegozio")
 
     def __init__(self, nome: str, prezzo: float, negozio_id: int):
         self.nome = nome

@@ -1,4 +1,4 @@
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource, reqparse
 
 from modelli.negozio import ModelloNegozio
@@ -52,6 +52,13 @@ class Negozio(Resource):
 
 
 class Negozi(Resource):
-    @jwt_required()
+    @jwt_required(optional=True)
     def get(self):
-        return {'negozi': [negozio.json() for negozio in ModelloNegozio.trova_tutti()]}
+        id_utente = get_jwt_identity()
+        negozi = [negozio.json() for negozio in ModelloNegozio.trova_tutti()]
+        if id_utente:
+            return {"negozi": negozi}
+        return {
+            "oggetti": [negozio['nome'] for negozio in negozi],
+            "messaggio": "I dati completi richiedono l'autenticazione"
+        }, 200

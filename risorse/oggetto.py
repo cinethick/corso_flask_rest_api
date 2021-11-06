@@ -1,4 +1,4 @@
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource, reqparse
 
 from modelli.oggetto import ModelloOggetto
@@ -81,6 +81,13 @@ class Oggetto(Resource):
 
 
 class Oggetti(Resource):
-    @jwt_required()
+    @jwt_required(optional=True)
     def get(self):
-        return {'oggetti': [oggetto.json() for oggetto in ModelloOggetto.trova_tutti()]}
+        id_utente = get_jwt_identity()
+        oggetti = [oggetto.json() for oggetto in ModelloOggetto.trova_tutti()]
+        if id_utente:
+            return {"oggetti": oggetti}
+        return {
+            "oggetti": [oggetto['nome'] for oggetto in oggetti],
+            "messaggio": "I dati completi richiedono l'autenticazione"
+        }, 200
