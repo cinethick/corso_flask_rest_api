@@ -4,6 +4,17 @@ from flask_restful import Resource, reqparse
 from modelli.oggetto import ModelloOggetto
 
 
+MESSAGGI_OGGETTO = {
+    "campo": "Il campo '{}' non può essere lasciato vuoto.",
+    "non_trovato": "Non è presente un oggetto chiamato {}.",
+    "duplicato": "E' già presente un oggetto chiamato {}.",
+    "inserimento": "Si è verificato un errore inserendo l'oggetto.",
+    "eliminato": "Oggetto eliminato.",
+    "eliminazione": "Si è verificato un errore eliminando l'oggetto.",
+    "credenziali": "I dati completi richiedono l'autenticazione",
+}
+
+
 class Oggetto(Resource):
     """
     Classe API oggetto
@@ -16,13 +27,13 @@ class Oggetto(Resource):
         "prezzo",
         type=float,
         required=True,
-        help="Questo campo non può essere lasciato vuoto",
+        help=MESSAGGI_OGGETTO["campo"].format("prezzo"),
     )
     parser.add_argument(
         "negozio_id",
         type=int,
         required=True,
-        help="Ogni negozio deve avere l'id del proprio negozio",
+        help=MESSAGGI_OGGETTO["campo"].format("negozio_id"),
     )
 
     @jwt_required()
@@ -30,12 +41,12 @@ class Oggetto(Resource):
         oggetto = ModelloOggetto.trova_per_nome(nome)
         if oggetto:
             return oggetto.json()
-        return {"errore": "Oggetto non trovato"}, 404
+        return {"errore": MESSAGGI_OGGETTO["non_trovato"]}, 404
 
     @jwt_required()
     def post(self, nome: str):
         if ModelloOggetto.trova_per_nome(nome):
-            return {"errore": f"E' già presente un oggetto chiamato {nome}."}, 409
+            return {"errore": MESSAGGI_OGGETTO["duplicato"].format(nome)}, 409
 
         dati = Oggetto.parser.parse_args()
         nuovo_oggetto = ModelloOggetto(nome, dati["prezzo"], dati["negozio_id"])
@@ -43,7 +54,7 @@ class Oggetto(Resource):
         try:
             nuovo_oggetto.salva()
         except:
-            return {"errore": "Si è verificato un errore inserendo l'oggetto"}, 500
+            return {"errore": MESSAGGI_OGGETTO["inserimento"]}, 500
 
         return nuovo_oggetto.json(), 201
 
@@ -54,11 +65,11 @@ class Oggetto(Resource):
             try:
                 oggetto_esistente.elimina()
             except:
-                return {"errore": "Si è verificato un errore eliminando l'oggetto"}, 500
+                return {"errore": MESSAGGI_OGGETTO["eliminazione"]}, 500
 
-            return {"messaggio": "Oggetto eliminato"}
+            return {"messaggio": MESSAGGI_OGGETTO["eliminato"]}
         else:
-            return {"errore": f"Non è presente un oggetto chiamato {nome}."}, 404
+            return {"errore": MESSAGGI_OGGETTO["non_trovato"].format(nome)}, 404
 
     @jwt_required()
     def put(self, nome):
@@ -76,7 +87,7 @@ class Oggetto(Resource):
         try:
             oggetto.salva()
         except:
-            return {"errore": "Si è verificato un errore inserendo l'oggetto"}, 500
+            return {"errore": MESSAGGI_OGGETTO["inserimento"]}, 500
 
         return oggetto.json(), codice
 
@@ -90,5 +101,5 @@ class Oggetti(Resource):
             return {"oggetti": oggetti}
         return {
             "oggetti": [oggetto["nome"] for oggetto in oggetti],
-            "messaggio": "I dati completi richiedono l'autenticazione",
+            "messaggio": MESSAGGI_OGGETTO["credenziali"],
         }, 200

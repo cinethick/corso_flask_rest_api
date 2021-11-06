@@ -3,6 +3,16 @@ from flask_restful import Resource, reqparse
 
 from modelli.negozio import ModelloNegozio
 
+MESSAGGI_NEGOZIO = {
+    "campo": "Il campo '{}' non può essere lasciato vuoto.",
+    "non_trovato": "Non è presente un negozio chiamato {}.",
+    "duplicato": "E' già presente un negozio chiamato {}.",
+    "inserimento": "Si è verificato un errore inserendo il negozio.",
+    "eliminato": "Negozio eliminato.",
+    "eliminazione": "Si è verificato un errore eliminando il negozio.",
+    "credenziali": "I dati completi richiedono l'autenticazione.",
+}
+
 
 class Negozio(Resource):
     """
@@ -14,7 +24,7 @@ class Negozio(Resource):
         "nome",
         type=str,
         required=True,
-        help="Questo campo non può essere lasciato vuoto",
+        help=MESSAGGI_NEGOZIO["campo"].format("nome"),
     )
 
     @jwt_required()
@@ -22,19 +32,19 @@ class Negozio(Resource):
         negozio = ModelloNegozio.trova_per_nome(nome)
         if negozio:
             return negozio.json()
-        return {"errore": "Negozio non trovato"}, 404
+        return {"errore": MESSAGGI_NEGOZIO["non_trovato"].format(nome)}, 404
 
     @jwt_required()
     def post(self, nome: str):
         if ModelloNegozio.trova_per_nome(nome):
-            return {"errore": f"E' già presente un negozio chiamato {nome}."}, 409
+            return {"errore": MESSAGGI_NEGOZIO["duplicato"].format(nome)}, 409
 
         nuovo_negozio = ModelloNegozio(nome)
 
         try:
             nuovo_negozio.salva()
         except:
-            return {"errore": "Si è verificato un errore inserendo il negozio"}, 500
+            return {"errore": MESSAGGI_NEGOZIO["inserimento"]}, 500
 
         return nuovo_negozio.json(), 201
 
@@ -45,13 +55,11 @@ class Negozio(Resource):
             try:
                 negozio_esistente.elimina()
             except:
-                return {
-                    "errore": "Si è verificato un errore eliminando il negozio"
-                }, 500
+                return {"errore": MESSAGGI_NEGOZIO["eliminazione"]}, 500
 
-            return {"messaggio": "Negozio eliminato"}
+            return {"messaggio": MESSAGGI_NEGOZIO["eliminato"]}
         else:
-            return {"errore": f"Non è presente un negozio chiamato {nome}."}, 404
+            return {"errore": MESSAGGI_NEGOZIO["non_trovato"].format(nome)}, 404
 
 
 class Negozi(Resource):
@@ -63,5 +71,5 @@ class Negozi(Resource):
             return {"negozi": negozi}
         return {
             "oggetti": [negozio["nome"] for negozio in negozi],
-            "messaggio": "I dati completi richiedono l'autenticazione",
+            "messaggio": MESSAGGI_NEGOZIO["credenziali"],
         }, 200

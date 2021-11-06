@@ -18,6 +18,18 @@ CONTESTO_PWD = CryptContext(
     default="pbkdf2_sha256",
     pbkdf2_sha256__default_rounds=30000,
 )
+MESSAGGI_UTENTE = {
+    "campo": "Il campo '{}' non può essere lasciato vuoto.",
+    "non_trovato": "Non è presente un utente con id {}.",
+    "duplicato": "E' già presente un utente chiamato {}.",
+    "inserito": "Utente inserito correttamente.",
+    "inserimento": "Si è verificato un errore inserendo l'utente.",
+    "eliminato": "Utente eliminato.",
+    "eliminazione": "Si è verificato un errore eliminando l'utente.",
+    "non_autorizzato": "Azione non autorizzata",
+    "credenziali": "Credenziali non valide!",
+    "logout": "Logout eseguito correttamente!",
+}
 
 
 def parser_utente():
@@ -26,13 +38,13 @@ def parser_utente():
         "nome",
         type=str,
         required=True,
-        help="Questo campo non può essere lasciato vuoto",
+        help=MESSAGGI_UTENTE["campo"].format("nome"),
     )
     parser.add_argument(
         "password",
         type=str,
         required=True,
-        help="Questo campo non può essere lasciato vuoto",
+        help=MESSAGGI_UTENTE["campo"].format("password"),
     )
     return parser
 
@@ -48,11 +60,11 @@ class RegistraUtente(Resource):
         nuovo_utente = ModelloUtente(**dati)
 
         if ModelloUtente.trova_per_nome(nome):
-            return {"errore": f"E' già presente un utente chiamato {nome}."}, 409
+            return {"errore": MESSAGGI_UTENTE["duplicato"].format(nome)}, 409
 
         nuovo_utente.salva()
 
-        return {"messaggio": "Utente creato correttamente"}, 201
+        return {"messaggio": MESSAGGI_UTENTE["inserito"]}, 201
 
 
 class Utente(Resource):
@@ -62,25 +74,25 @@ class Utente(Resource):
         utente = ModelloUtente.trova_per_id(id_utente)
         if utente:
             return utente.json()
-        return {"errore": "Utente non trovato"}, 404
+        return {"errore": MESSAGGI_UTENTE["non_trovato"].format(id_utente)}, 404
 
     @classmethod
     @jwt_required(fresh=True)
     def delete(cls, id_utente: int):
         claims = get_jwt()
         if not claims["admin"]:
-            return {"errore": "Azione non autorizzata"}, 401
+            return {"errore": MESSAGGI_UTENTE["non_autorizzato"]}, 401
 
         utente = ModelloUtente.trova_per_id(id_utente)
         if utente:
             try:
                 utente.elimina()
             except:
-                return {"errore": "Si è verificato un errore eliminando l'utente."}, 500
+                return {"errore": MESSAGGI_UTENTE["eliminazione"]}, 500
 
-            return {"messaggio": "Utente eliminato."}
+            return {"messaggio": MESSAGGI_UTENTE["eliminato"]}
         else:
-            return {"errore": "Utente non trovato."}, 404
+            return {"errore": MESSAGGI_UTENTE["non_trovato"].format(id_utente)}, 404
 
 
 class LoginUtente(Resource):
@@ -97,7 +109,7 @@ class LoginUtente(Resource):
             token_accesso = create_access_token(identity=utente.id, fresh=True)
             token_refresh = create_refresh_token(utente.id)
             return {"access_token": token_accesso, "refresh_token": token_refresh}, 200
-        return {"errore": "Credenziali non valide!"}, 401
+        return {"errore": MESSAGGI_UTENTE["credenziali"]}, 401
 
 
 class LogoutUtente(Resource):
@@ -107,4 +119,4 @@ class LogoutUtente(Resource):
         # jti = JWT ID
         jti = get_jwt()["jti"]
         BLOCKLIST.add(jti)
-        return {"messaggio": "Logout eseguito correttamente."}, 200
+        return {"messaggio": MESSAGGI_UTENTE["logout"]}, 200
