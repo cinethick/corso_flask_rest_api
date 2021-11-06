@@ -1,5 +1,8 @@
+from typing import Union
+
 from db.gestione import database
-from modelli.negozio import ModelloNegozio
+
+JSONOggetto = dict[str, Union[int, str, float]]
 
 
 class ModelloOggetto(database.Model):
@@ -9,7 +12,7 @@ class ModelloOggetto(database.Model):
     __tablename__ = 'oggetti'
 
     id = database.Column(database.Integer, primary_key=True)
-    nome = database.Column(database.String(80))
+    nome = database.Column(database.String(80), unique=True)
     prezzo = database.Column(database.Float(precision=2))
 
     # Relazione con altra tabella (padre)
@@ -25,10 +28,10 @@ class ModelloOggetto(database.Model):
         return cls.query.filter_by(nome=nome).first()
 
     @classmethod
-    def trova_tutti(cls):
+    def trova_tutti(cls) -> list["ModelloOggetto"]:
         return cls.query.all()
 
-    def json(self) -> dict:
+    def json(self) -> JSONOggetto:
         return {"id": self.id, "nome": self.nome, "prezzo": self.prezzo, "negozio_id": self.negozio_id}
 
     def salva(self):
