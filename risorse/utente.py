@@ -2,13 +2,19 @@
 Classe utente dell'applicazione
 """
 from hmac import compare_digest
-from flask_restful import Resource, reqparse
+
 from flask_jwt_extended import jwt_required, create_access_token, create_refresh_token, get_jwt
+from flask_restful import Resource, reqparse
+from passlib.context import CryptContext
 
 from modelli.utente import ModelloUtente
 
-
 BLOCKLIST: set = set()
+CONTESTO_PWD = CryptContext(
+    schemes=["pbkdf2_sha256"],
+    default="pbkdf2_sha256",
+    pbkdf2_sha256__default_rounds=30000
+)
 
 
 def parser_utente():
@@ -35,6 +41,7 @@ class RegistraUtente(Resource):
     def post(cls):
         dati = cls.parser.parse_args()
         nome = dati['nome']
+        dati['password'] = CONTESTO_PWD.hash(dati['password'].encode('utf-8'))
         nuovo_utente = ModelloUtente(**dati)
 
         if ModelloUtente.trova_per_nome(nome):
@@ -81,13 +88,13 @@ class LoginUtente(Resource):
         dati = cls.parser.parse_args()
         utente = ModelloUtente.trova_per_nome(dati['nome'])
 
-        if utente and compare_digest(utente.password.encode('utf-8'), dati['password'].encode('utf-8')):
+        if utente and CONTESTO_PWD.verify(dati['password'].encode('utf-8'), utente.password):
             token_accesso = create_access_token(identity=utente.id, fresh=True)
             token_refresh = create_refresh_token(utente.id)
             return {
-                "access_token": token_accesso,
-                "refresh_token": token_refresh
-            }, 200
+                       "access_token": token_accesso,
+                       "refresh_token": token_refresh
+                   }, 200
         return {'errore': "Credenziali non valide!"}, 401
 
 
