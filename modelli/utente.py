@@ -7,7 +7,8 @@ JSONUtente = dict[str, Union[int, str]]
 
 class ModelloUtente(database.Model):
     """Classe che rappresenta un utente dell'applicazione"""
-    __tablename__ = 'utenti'
+
+    __tablename__ = "utenti"
 
     id = database.Column(database.Integer, primary_key=True)
     nome = database.Column(database.String(80))

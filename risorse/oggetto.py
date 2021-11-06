@@ -8,20 +8,21 @@ class Oggetto(Resource):
     """
     Classe API oggetto
     """
+
     # Questo è una proprietà statica che appartiene alla classe e non all'istanza
     # Permette di fare il parsing delle proprietà dell'oggetto
     parser = reqparse.RequestParser()
     parser.add_argument(
-        'prezzo',
+        "prezzo",
         type=float,
         required=True,
-        help="Questo campo non può essere lasciato vuoto"
+        help="Questo campo non può essere lasciato vuoto",
     )
     parser.add_argument(
-        'negozio_id',
+        "negozio_id",
         type=int,
         required=True,
-        help="Ogni negozio deve avere l'id del proprio negozio"
+        help="Ogni negozio deve avere l'id del proprio negozio",
     )
 
     @jwt_required()
@@ -29,20 +30,20 @@ class Oggetto(Resource):
         oggetto = ModelloOggetto.trova_per_nome(nome)
         if oggetto:
             return oggetto.json()
-        return {'errore': 'Oggetto non trovato'}, 404
+        return {"errore": "Oggetto non trovato"}, 404
 
     @jwt_required()
     def post(self, nome: str):
         if ModelloOggetto.trova_per_nome(nome):
-            return {'errore': f"E' già presente un oggetto chiamato {nome}."}, 409
+            return {"errore": f"E' già presente un oggetto chiamato {nome}."}, 409
 
         dati = Oggetto.parser.parse_args()
-        nuovo_oggetto = ModelloOggetto(nome, dati['prezzo'], dati['negozio_id'])
+        nuovo_oggetto = ModelloOggetto(nome, dati["prezzo"], dati["negozio_id"])
 
         try:
             nuovo_oggetto.salva()
         except:
-            return {'errore': 'Si è verificato un errore inserendo l\'oggetto'}, 500
+            return {"errore": "Si è verificato un errore inserendo l'oggetto"}, 500
 
         return nuovo_oggetto.json(), 201
 
@@ -53,11 +54,11 @@ class Oggetto(Resource):
             try:
                 oggetto_esistente.elimina()
             except:
-                return {'errore': 'Si è verificato un errore eliminando l\'oggetto'}, 500
+                return {"errore": "Si è verificato un errore eliminando l'oggetto"}, 500
 
-            return {'messaggio': 'Oggetto eliminato'}
+            return {"messaggio": "Oggetto eliminato"}
         else:
-            return {'errore': f"Non è presente un oggetto chiamato {nome}."}, 404
+            return {"errore": f"Non è presente un oggetto chiamato {nome}."}, 404
 
     @jwt_required()
     def put(self, nome):
@@ -65,8 +66,8 @@ class Oggetto(Resource):
         oggetto = ModelloOggetto.trova_per_nome(nome)
 
         if oggetto:
-            oggetto.prezzo = dati['prezzo']
-            oggetto.negozio_id = dati['negozio_id']
+            oggetto.prezzo = dati["prezzo"]
+            oggetto.negozio_id = dati["negozio_id"]
             codice = 200
         else:
             oggetto = ModelloOggetto(nome, **dati)
@@ -75,7 +76,7 @@ class Oggetto(Resource):
         try:
             oggetto.salva()
         except:
-            return {'errore': 'Si è verificato un errore inserendo l\'oggetto'}, 500
+            return {"errore": "Si è verificato un errore inserendo l'oggetto"}, 500
 
         return oggetto.json(), codice
 
@@ -88,6 +89,6 @@ class Oggetti(Resource):
         if id_utente:
             return {"oggetti": oggetti}
         return {
-            "oggetti": [oggetto['nome'] for oggetto in oggetti],
-            "messaggio": "I dati completi richiedono l'autenticazione"
+            "oggetti": [oggetto["nome"] for oggetto in oggetti],
+            "messaggio": "I dati completi richiedono l'autenticazione",
         }, 200

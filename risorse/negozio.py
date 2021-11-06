@@ -8,12 +8,13 @@ class Negozio(Resource):
     """
     Classe API negozio
     """
+
     parser = reqparse.RequestParser()
     parser.add_argument(
-        'nome',
+        "nome",
         type=str,
         required=True,
-        help="Questo campo non può essere lasciato vuoto"
+        help="Questo campo non può essere lasciato vuoto",
     )
 
     @jwt_required()
@@ -21,19 +22,19 @@ class Negozio(Resource):
         negozio = ModelloNegozio.trova_per_nome(nome)
         if negozio:
             return negozio.json()
-        return {'errore': 'Negozio non trovato'}, 404
+        return {"errore": "Negozio non trovato"}, 404
 
     @jwt_required()
     def post(self, nome: str):
         if ModelloNegozio.trova_per_nome(nome):
-            return {'errore': f"E' già presente un negozio chiamato {nome}."}, 409
+            return {"errore": f"E' già presente un negozio chiamato {nome}."}, 409
 
         nuovo_negozio = ModelloNegozio(nome)
 
         try:
             nuovo_negozio.salva()
         except:
-            return {'errore': 'Si è verificato un errore inserendo il negozio'}, 500
+            return {"errore": "Si è verificato un errore inserendo il negozio"}, 500
 
         return nuovo_negozio.json(), 201
 
@@ -44,11 +45,13 @@ class Negozio(Resource):
             try:
                 negozio_esistente.elimina()
             except:
-                return {'errore': 'Si è verificato un errore eliminando il negozio'}, 500
+                return {
+                    "errore": "Si è verificato un errore eliminando il negozio"
+                }, 500
 
-            return {'messaggio': 'Negozio eliminato'}
+            return {"messaggio": "Negozio eliminato"}
         else:
-            return {'errore': f"Non è presente un negozio chiamato {nome}."}, 404
+            return {"errore": f"Non è presente un negozio chiamato {nome}."}, 404
 
 
 class Negozi(Resource):
@@ -59,6 +62,6 @@ class Negozi(Resource):
         if id_utente:
             return {"negozi": negozi}
         return {
-            "oggetti": [negozio['nome'] for negozio in negozi],
-            "messaggio": "I dati completi richiedono l'autenticazione"
+            "oggetti": [negozio["nome"] for negozio in negozi],
+            "messaggio": "I dati completi richiedono l'autenticazione",
         }, 200

@@ -10,13 +10,14 @@ class ModelloNegozio(database.Model):
     """
     Modello che rappresenta un Negozio dell'applicazione
     """
-    __tablename__ = 'negozi'
+
+    __tablename__ = "negozi"
 
     id = database.Column(database.Integer, primary_key=True)
     nome = database.Column(database.String(80), unique=True)
 
     # Relazione con altra tabella (figli)
-    oggetti = database.relationship('ModelloOggetto', lazy='dynamic')
+    oggetti = database.relationship("ModelloOggetto", lazy="dynamic")
 
     def __init__(self, nome: str):
         self.nome = nome
@@ -30,7 +31,11 @@ class ModelloNegozio(database.Model):
         return cls.query.all()
 
     def json(self) -> JSONOggetto:
-        return {"id": self.id, "nome": self.nome, "oggetti": [oggetto.json() for oggetto in self.oggetti.all()]}
+        return {
+            "id": self.id,
+            "nome": self.nome,
+            "oggetti": [oggetto.json() for oggetto in self.oggetti.all()],
+        }
 
     def salva(self):
         database.session.add(self)
