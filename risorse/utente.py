@@ -6,6 +6,7 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     get_jwt,
+    get_jwt_identity,
 )
 from flask_restful import Resource, reqparse
 from passlib.context import CryptContext
@@ -28,7 +29,7 @@ MESSAGGI_UTENTE = {
     "eliminazione": "Si è verificato un errore eliminando l'utente.",
     "non_autorizzato": "Azione non autorizzata",
     "credenziali": "Credenziali non valide!",
-    "logout": "Logout eseguito correttamente!",
+    "logout": "Logout eseguito correttamente! (Utente ID {})",
 }
 
 
@@ -119,4 +120,5 @@ class LogoutUtente(Resource):
         # jti = JWT ID
         jti = get_jwt()["jti"]
         BLOCKLIST.add(jti)
-        return {"messaggio": MESSAGGI_UTENTE["logout"]}, 200
+        id_utente = get_jwt_identity()
+        return {"messaggio": MESSAGGI_UTENTE["logout"].format(id_utente)}, 200
