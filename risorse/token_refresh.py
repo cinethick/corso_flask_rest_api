@@ -3,8 +3,9 @@ from flask_restful import Resource
 
 
 class TokenRefresh(Resource):
+    @classmethod
     @jwt_required(fresh=True)
-    def post(self):
+    def post(cls):
         utente_corrente = get_jwt_identity()
         nuovo_token = create_access_token(identity=utente_corrente, fresh=True)
         return {"access_token": nuovo_token}, 200

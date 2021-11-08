@@ -36,15 +36,17 @@ class Oggetto(Resource):
         help=MESSAGGI_OGGETTO["campo"].format("negozio_id"),
     )
 
+    @classmethod
     @jwt_required()
-    def get(self, nome: str):
+    def get(cls, nome: str):
         oggetto = ModelloOggetto.trova_per_nome(nome)
         if oggetto:
             return oggetto.json()
         return {"errore": MESSAGGI_OGGETTO["non_trovato"]}, 404
 
+    @classmethod
     @jwt_required()
-    def post(self, nome: str):
+    def post(cls, nome: str):
         if ModelloOggetto.trova_per_nome(nome):
             return {"errore": MESSAGGI_OGGETTO["duplicato"].format(nome)}, 409
 
@@ -58,8 +60,9 @@ class Oggetto(Resource):
 
         return nuovo_oggetto.json(), 201
 
+    @classmethod
     @jwt_required()
-    def delete(self, nome):
+    def delete(cls, nome):
         oggetto_esistente = ModelloOggetto.trova_per_nome(nome)
         if oggetto_esistente:
             try:
@@ -71,8 +74,9 @@ class Oggetto(Resource):
         else:
             return {"errore": MESSAGGI_OGGETTO["non_trovato"].format(nome)}, 404
 
+    @classmethod
     @jwt_required()
-    def put(self, nome):
+    def put(cls, nome):
         dati = Oggetto.parser.parse_args()
         oggetto = ModelloOggetto.trova_per_nome(nome)
 
@@ -93,8 +97,9 @@ class Oggetto(Resource):
 
 
 class Oggetti(Resource):
+    @classmethod
     @jwt_required(optional=True)
-    def get(self):
+    def get(cls):
         id_utente = get_jwt_identity()
         oggetti = [oggetto.json() for oggetto in ModelloOggetto.trova_tutti()]
         if id_utente:

@@ -34,8 +34,9 @@ class Negozio(Resource):
             return negozio.json()
         return {"errore": MESSAGGI_NEGOZIO["non_trovato"].format(nome)}, 404
 
+    @classmethod
     @jwt_required()
-    def post(self, nome: str):
+    def post(cls, nome: str):
         if ModelloNegozio.trova_per_nome(nome):
             return {"errore": MESSAGGI_NEGOZIO["duplicato"].format(nome)}, 409
 
@@ -48,8 +49,9 @@ class Negozio(Resource):
 
         return nuovo_negozio.json(), 201
 
+    @classmethod
     @jwt_required()
-    def delete(self, nome):
+    def delete(cls, nome):
         negozio_esistente = ModelloNegozio.trova_per_nome(nome)
         if negozio_esistente:
             try:
@@ -63,8 +65,9 @@ class Negozio(Resource):
 
 
 class Negozi(Resource):
+    @classmethod
     @jwt_required(optional=True)
-    def get(self):
+    def get(cls):
         id_utente = get_jwt_identity()
         negozi = [negozio.json() for negozio in ModelloNegozio.trova_tutti()]
         if id_utente:
