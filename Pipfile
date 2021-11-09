@@ -9,6 +9,9 @@ flask-sqlalchemy = "*"
 flask-restful = "*"
 flask-jwt-extended = "*"
 passlib = "*"
+marshmallow = "*"
+flask-marshmallow = "*"
+marshmallow-sqlalchemy = "*"
 
 [dev-packages]
 black = "*"
