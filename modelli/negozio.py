@@ -1,9 +1,4 @@
-from typing import Union
-
 from db.gestione import database
-from modelli.oggetto import JSONOggetto
-
-JSONNegozio = dict[str, Union[int, str, list[JSONOggetto]]]
 
 
 class ModelloNegozio(database.Model):
@@ -29,13 +24,6 @@ class ModelloNegozio(database.Model):
     @classmethod
     def trova_tutti(cls) -> list["ModelloNegozio"]:
         return cls.query.all()
-
-    def json(self) -> JSONOggetto:
-        return {
-            "id": self.id,
-            "nome": self.nome,
-            "oggetti": [oggetto.json() for oggetto in self.oggetti.all()],
-        }
 
     def salva(self):
         database.session.add(self)

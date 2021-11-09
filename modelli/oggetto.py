@@ -1,8 +1,4 @@
-from typing import Union
-
 from db.gestione import database
-
-JSONOggetto = dict[str, Union[int, str, float]]
 
 
 class ModelloOggetto(database.Model):
@@ -31,14 +27,6 @@ class ModelloOggetto(database.Model):
     @classmethod
     def trova_tutti(cls) -> list["ModelloOggetto"]:
         return cls.query.all()
-
-    def json(self) -> JSONOggetto:
-        return {
-            "id": self.id,
-            "nome": self.nome,
-            "prezzo": self.prezzo,
-            "negozio_id": self.negozio_id,
-        }
 
     def salva(self):
         database.session.add(self)

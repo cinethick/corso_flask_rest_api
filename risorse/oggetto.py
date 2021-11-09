@@ -1,8 +1,10 @@
+from flask import request
+from marshmallow import ValidationError
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
 
 from modelli.oggetto import ModelloOggetto
-
+from schemi.oggetto import SchemaOggetto
 
 MESSAGGI_OGGETTO = {
     "campo": "Il campo '{}' non può essere lasciato vuoto.",
@@ -12,7 +14,10 @@ MESSAGGI_OGGETTO = {
     "eliminato": "Oggetto eliminato.",
     "eliminazione": "Si è verificato un errore eliminando l'oggetto.",
     "credenziali": "I dati completi richiedono l'autenticazione",
+    "validazione": "Errore di validazione dei dati.",
 }
+
+schema_oggetto = SchemaOggetto()
 
 
 class Oggetto(Resource):
@@ -22,26 +27,13 @@ class Oggetto(Resource):
 
     # Questo è una proprietà statica che appartiene alla classe e non all'istanza
     # Permette di fare il parsing delle proprietà dell'oggetto
-    parser = reqparse.RequestParser()
-    parser.add_argument(
-        "prezzo",
-        type=float,
-        required=True,
-        help=MESSAGGI_OGGETTO["campo"].format("prezzo"),
-    )
-    parser.add_argument(
-        "negozio_id",
-        type=int,
-        required=True,
-        help=MESSAGGI_OGGETTO["campo"].format("negozio_id"),
-    )
 
     @classmethod
     @jwt_required()
     def get(cls, nome: str):
         oggetto = ModelloOggetto.trova_per_nome(nome)
         if oggetto:
-            return oggetto.json()
+            return schema_oggetto.dump(oggetto)
         return {"errore": MESSAGGI_OGGETTO["non_trovato"]}, 404
 
     @classmethod
@@ -50,15 +42,21 @@ class Oggetto(Resource):
         if ModelloOggetto.trova_per_nome(nome):
             return {"errore": MESSAGGI_OGGETTO["duplicato"].format(nome)}, 409
 
-        dati = Oggetto.parser.parse_args()
-        nuovo_oggetto = ModelloOggetto(nome, dati["prezzo"], dati["negozio_id"])
+        try:
+            json = request.get_json()
+            dati = schema_oggetto.load(json)
+        except ValidationError as errore:
+            return {
+                "errore": MESSAGGI_OGGETTO["validazione"],
+                "descrizione": errore.messages,
+            }, 400
 
         try:
+            nuovo_oggetto = ModelloOggetto(nome, dati["prezzo"], dati["negozio_id"])
             nuovo_oggetto.salva()
+            return schema_oggetto.dump(nuovo_oggetto), 201
         except:
             return {"errore": MESSAGGI_OGGETTO["inserimento"]}, 500
-
-        return nuovo_oggetto.json(), 201
 
     @classmethod
     @jwt_required()
@@ -77,7 +75,15 @@ class Oggetto(Resource):
     @classmethod
     @jwt_required()
     def put(cls, nome):
-        dati = Oggetto.parser.parse_args()
+        try:
+            json = request.get_json()
+            dati = schema_oggetto.load(json)
+        except ValidationError as errore:
+            return {
+                "errore": MESSAGGI_OGGETTO["validazione"],
+                "descrizione": errore.messages,
+            }, 400
+
         oggetto = ModelloOggetto.trova_per_nome(nome)
 
         if oggetto:
@@ -93,7 +99,7 @@ class Oggetto(Resource):
         except:
             return {"errore": MESSAGGI_OGGETTO["inserimento"]}, 500
 
-        return oggetto.json(), codice
+        return schema_oggetto.dump(oggetto), codice
 
 
 class Oggetti(Resource):
@@ -101,7 +107,9 @@ class Oggetti(Resource):
     @jwt_required(optional=True)
     def get(cls):
         id_utente = get_jwt_identity()
-        oggetti = [oggetto.json() for oggetto in ModelloOggetto.trova_tutti()]
+        oggetti = [
+            schema_oggetto.dump(oggetto) for oggetto in ModelloOggetto.trova_tutti()
+        ]
         if id_utente:
             return {"oggetti": oggetti}
         return {

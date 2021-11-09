@@ -1,7 +1,8 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
 
 from modelli.negozio import ModelloNegozio
+from schemi.negozio import SchemaNegozio
 
 MESSAGGI_NEGOZIO = {
     "campo": "Il campo '{}' non può essere lasciato vuoto.",
@@ -13,19 +14,13 @@ MESSAGGI_NEGOZIO = {
     "credenziali": "I dati completi richiedono l'autenticazione.",
 }
 
+schema_negozio = SchemaNegozio()
+
 
 class Negozio(Resource):
     """
     Classe API negozio
     """
-
-    parser = reqparse.RequestParser()
-    parser.add_argument(
-        "nome",
-        type=str,
-        required=True,
-        help=MESSAGGI_NEGOZIO["campo"].format("nome"),
-    )
 
     @jwt_required()
     def get(self, nome: str):
@@ -47,7 +42,7 @@ class Negozio(Resource):
         except:
             return {"errore": MESSAGGI_NEGOZIO["inserimento"]}, 500
 
-        return nuovo_negozio.json(), 201
+        return schema_negozio.dump(nuovo_negozio), 201
 
     @classmethod
     @jwt_required()
@@ -69,7 +64,9 @@ class Negozi(Resource):
     @jwt_required(optional=True)
     def get(cls):
         id_utente = get_jwt_identity()
-        negozi = [negozio.json() for negozio in ModelloNegozio.trova_tutti()]
+        negozi = [
+            schema_negozio.dump(negozio) for negozio in ModelloNegozio.trova_tutti()
+        ]
         if id_utente:
             return {"negozi": negozi}
         return {

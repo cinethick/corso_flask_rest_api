@@ -48,7 +48,7 @@ class RegistraUtente(Resource):
         except ValidationError as errore:
             return {
                 "errore": MESSAGGI_UTENTE["validazione"],
-                "descrizione": errore,
+                "descrizione": errore.messages,
             }, 400
 
         nome = dati["nome"]
@@ -100,7 +100,7 @@ class LoginUtente(Resource):
         except ValidationError as errore:
             return {
                 "errore": MESSAGGI_UTENTE["validazione"],
-                "descrizione": errore,
+                "descrizione": errore.messages,
             }, 400
 
         utente = ModelloUtente.trova_per_nome(dati["nome"])
