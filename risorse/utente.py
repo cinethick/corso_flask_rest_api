@@ -1,6 +1,8 @@
 """
 Classe utente dell'applicazione
 """
+from flask import request
+from marshmallow import ValidationError
 from flask_jwt_extended import (
     jwt_required,
     create_access_token,
@@ -8,10 +10,11 @@ from flask_jwt_extended import (
     get_jwt,
     get_jwt_identity,
 )
-from flask_restful import Resource, reqparse
+from flask_restful import Resource
 from passlib.context import CryptContext
 
 from modelli.utente import ModelloUtente
+from schemi.utente import SchemaUtente
 
 BLOCKLIST: set = set()
 CONTESTO_PWD = CryptContext(
@@ -30,32 +33,24 @@ MESSAGGI_UTENTE = {
     "non_autorizzato": "Azione non autorizzata",
     "credenziali": "Credenziali non valide!",
     "logout": "Logout eseguito correttamente! (Utente ID {})",
+    "validazione": "Errore di validazione dei dati.",
 }
 
-
-def parser_utente():
-    parser = reqparse.RequestParser()
-    parser.add_argument(
-        "nome",
-        type=str,
-        required=True,
-        help=MESSAGGI_UTENTE["campo"].format("nome"),
-    )
-    parser.add_argument(
-        "password",
-        type=str,
-        required=True,
-        help=MESSAGGI_UTENTE["campo"].format("password"),
-    )
-    return parser
+schema_utente = SchemaUtente()
 
 
 class RegistraUtente(Resource):
-    parser = parser_utente()
-
     @classmethod
     def post(cls):
-        dati = cls.parser.parse_args()
+        try:
+            json = request.get_json()
+            dati = schema_utente.load(json)
+        except ValidationError as errore:
+            return {
+                "errore": MESSAGGI_UTENTE["validazione"],
+                "descrizione": errore,
+            }, 400
+
         nome = dati["nome"]
         dati["password"] = CONTESTO_PWD.hash(dati["password"].encode("utf-8"))
         nuovo_utente = ModelloUtente(**dati)
@@ -74,7 +69,7 @@ class Utente(Resource):
     def get(cls, id_utente: int):
         utente = ModelloUtente.trova_per_id(id_utente)
         if utente:
-            return utente.json()
+            return schema_utente.dump(utente)
         return {"errore": MESSAGGI_UTENTE["non_trovato"].format(id_utente)}, 404
 
     @classmethod
@@ -97,11 +92,17 @@ class Utente(Resource):
 
 
 class LoginUtente(Resource):
-    parser = parser_utente()
-
     @classmethod
     def post(cls):
-        dati = cls.parser.parse_args()
+        try:
+            json = request.get_json()
+            dati = schema_utente.load(json)
+        except ValidationError as errore:
+            return {
+                "errore": MESSAGGI_UTENTE["validazione"],
+                "descrizione": errore,
+            }, 400
+
         utente = ModelloUtente.trova_per_nome(dati["nome"])
 
         if utente and CONTESTO_PWD.verify(

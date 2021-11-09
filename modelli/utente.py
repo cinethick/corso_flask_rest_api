@@ -1,8 +1,4 @@
-from typing import Union
-
 from db.gestione import database
-
-JSONUtente = dict[str, Union[int, str]]
 
 
 class ModelloUtente(database.Model):
@@ -25,9 +21,6 @@ class ModelloUtente(database.Model):
     @classmethod
     def trova_per_id(cls, _id: int) -> "ModelloUtente":
         return cls.query.filter_by(id=_id).first()
-
-    def json(self) -> JSONUtente:
-        return {"id": self.id, "nome": self.nome}
 
     def salva(self):
         database.session.add(self)
