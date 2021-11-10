@@ -1,4 +1,5 @@
 from db.gestione import database
+from modelli.oggetto import ModelloOggetto
 
 
 class ModelloNegozio(database.Model):
@@ -9,13 +10,10 @@ class ModelloNegozio(database.Model):
     __tablename__ = "negozi"
 
     id = database.Column(database.Integer, primary_key=True)
-    nome = database.Column(database.String(80), unique=True)
+    nome = database.Column(database.String(80), unique=True, nullable=False)
 
     # Relazione con altra tabella (figli)
     oggetti = database.relationship("ModelloOggetto", lazy="dynamic")
-
-    def __init__(self, nome: str):
-        self.nome = nome
 
     @classmethod
     def trova_per_nome(cls, nome) -> "ModelloNegozio":

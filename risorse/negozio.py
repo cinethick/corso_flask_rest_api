@@ -26,7 +26,7 @@ class Negozio(Resource):
     def get(self, nome: str):
         negozio = ModelloNegozio.trova_per_nome(nome)
         if negozio:
-            return negozio.json()
+            return schema_negozio.dump(negozio)
         return {"errore": MESSAGGI_NEGOZIO["non_trovato"].format(nome)}, 404
 
     @classmethod
@@ -35,7 +35,7 @@ class Negozio(Resource):
         if ModelloNegozio.trova_per_nome(nome):
             return {"errore": MESSAGGI_NEGOZIO["duplicato"].format(nome)}, 409
 
-        nuovo_negozio = ModelloNegozio(nome)
+        nuovo_negozio = ModelloNegozio(nome)  # (nome=nome)?
 
         try:
             nuovo_negozio.salva()

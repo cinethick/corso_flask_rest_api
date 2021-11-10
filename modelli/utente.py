@@ -7,12 +7,8 @@ class ModelloUtente(database.Model):
     __tablename__ = "utenti"
 
     id = database.Column(database.Integer, primary_key=True)
-    nome = database.Column(database.String(80))
-    password = database.Column(database.String(500))
-
-    def __init__(self, nome: str, password: str):
-        self.nome = nome
-        self.password = password
+    nome = database.Column(database.String(80), nullable=False, unique=True)
+    password = database.Column(database.String(500), nullable=False)
 
     @classmethod
     def trova_per_nome(cls, nome: str) -> "ModelloUtente":

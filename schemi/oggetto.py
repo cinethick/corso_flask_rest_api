@@ -1,11 +1,11 @@
-from marshmallow import Schema, fields
+from schemi.validazione import validazione
+from modelli.oggetto import ModelloOggetto
 
 
-class SchemaOggetto(Schema):
+class SchemaOggetto(validazione.SQLAlchemyAutoSchema):
     class Meta:
-        load_only = ("id",)
-
-    id = fields.Int()
-    nome = fields.Str()
-    prezzo = fields.Float()
-    negozio_id = fields.Int()
+        model = ModelloOggetto
+        load_only = ("negozio",)
+        dump_only = ("id",)
+        include_relationships = True
+        load_instance = True

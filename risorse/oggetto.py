@@ -44,7 +44,8 @@ class Oggetto(Resource):
 
         try:
             json = request.get_json()
-            dati = schema_oggetto.load(json)
+            # json["nome"] = nome # non sicuro che serva
+            oggetto = schema_oggetto.load(json)
         except ValidationError as errore:
             return {
                 "errore": MESSAGGI_OGGETTO["validazione"],
@@ -52,9 +53,8 @@ class Oggetto(Resource):
             }, 400
 
         try:
-            nuovo_oggetto = ModelloOggetto(nome, dati["prezzo"], dati["negozio_id"])
-            nuovo_oggetto.salva()
-            return schema_oggetto.dump(nuovo_oggetto), 201
+            oggetto.salva()
+            return schema_oggetto.dump(oggetto), 201
         except:
             return {"errore": MESSAGGI_OGGETTO["inserimento"]}, 500
 
@@ -77,7 +77,8 @@ class Oggetto(Resource):
     def put(cls, nome):
         try:
             json = request.get_json()
-            dati = schema_oggetto.load(json)
+            # json["nome"] = nome # non sicuro che serva
+            nuovo_oggetto = schema_oggetto.load(json)
         except ValidationError as errore:
             return {
                 "errore": MESSAGGI_OGGETTO["validazione"],
@@ -87,11 +88,11 @@ class Oggetto(Resource):
         oggetto = ModelloOggetto.trova_per_nome(nome)
 
         if oggetto:
-            oggetto.prezzo = dati["prezzo"]
-            oggetto.negozio_id = dati["negozio_id"]
+            oggetto.prezzo = nuovo_oggetto.prezzo
+            oggetto.negozio_id = nuovo_oggetto.negozio_id
             codice = 200
         else:
-            oggetto = ModelloOggetto(nome, **dati)
+            oggetto = nuovo_oggetto
             codice = 201
 
         try:

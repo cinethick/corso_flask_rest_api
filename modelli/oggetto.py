@@ -9,16 +9,14 @@ class ModelloOggetto(database.Model):
     __tablename__ = "oggetti"
 
     id = database.Column(database.Integer, primary_key=True)
-    nome = database.Column(database.String(80), unique=True)
+    nome = database.Column(database.String(80), nullable=False, unique=True)
     prezzo = database.Column(database.Float(precision=2))
 
     # Relazione con altra tabella (padre)
-    negozio_id = database.Column(database.Integer, database.ForeignKey("negozi.id"))
-
-    def __init__(self, nome: str, prezzo: float, negozio_id: int):
-        self.nome = nome
-        self.prezzo = prezzo
-        self.negozio_id = negozio_id
+    negozio_id = database.Column(
+        database.Integer, database.ForeignKey("negozi.id"), nullable=False
+    )
+    negozio = database.relationship("ModelloNegozio", viewonly=True)
 
     @classmethod
     def trova_per_nome(cls, nome) -> "ModelloOggetto":

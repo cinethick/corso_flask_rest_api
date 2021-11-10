@@ -3,6 +3,7 @@ from flask_jwt_extended import JWTManager
 from flask_restful import Api
 
 from db.gestione import database
+from schemi.validazione import validazione
 from risorse.negozio import Negozi, Negozio
 from risorse.oggetto import Oggetto, Oggetti
 from risorse.utente import RegistraUtente, Utente, LoginUtente, LogoutUtente, BLOCKLIST
@@ -18,6 +19,7 @@ app.config["JWT_SECRET_KEY"] = "ChiaveSegretaPerilJWT!!!1!g"
 app.secret_key = "ChiaveSegretaPerlApplicazione!!!1!g"
 api = Api(app)
 database.init_app(app)
+validazione.init_app(app)
 
 
 @app.before_first_request

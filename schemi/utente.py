@@ -1,11 +1,10 @@
-from marshmallow import Schema, fields
+from schemi.validazione import validazione
+from modelli.utente import ModelloUtente
 
 
-class SchemaUtente(Schema):
+class SchemaUtente(validazione.SQLAlchemyAutoSchema):
     class Meta:
+        model = ModelloUtente
         dump_only = ("id",)
         load_only = ("password",)
-
-    id = fields.Int()
-    nome = fields.Str(required=True)
-    password = fields.Str(required=True)
+        load_instance = True

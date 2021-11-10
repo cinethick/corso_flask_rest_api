@@ -44,21 +44,20 @@ class RegistraUtente(Resource):
     def post(cls):
         try:
             json = request.get_json()
-            dati = schema_utente.load(json)
+            utente = schema_utente.load(json)
         except ValidationError as errore:
             return {
                 "errore": MESSAGGI_UTENTE["validazione"],
                 "descrizione": errore.messages,
             }, 400
 
-        nome = dati["nome"]
-        dati["password"] = CONTESTO_PWD.hash(dati["password"].encode("utf-8"))
-        nuovo_utente = ModelloUtente(**dati)
+        nuovo_hash = CONTESTO_PWD.hash(utente.password.encode("utf-8"))
+        utente.password = nuovo_hash
 
-        if ModelloUtente.trova_per_nome(nome):
-            return {"errore": MESSAGGI_UTENTE["duplicato"].format(nome)}, 409
+        if ModelloUtente.trova_per_nome(utente.nome):
+            return {"errore": MESSAGGI_UTENTE["duplicato"].format(utente.nome)}, 409
 
-        nuovo_utente.salva()
+        utente.salva()
 
         return {"messaggio": MESSAGGI_UTENTE["inserito"]}, 201
 
@@ -96,17 +95,17 @@ class LoginUtente(Resource):
     def post(cls):
         try:
             json = request.get_json()
-            dati = schema_utente.load(json)
+            credenziali = schema_utente.load(json)
         except ValidationError as errore:
             return {
                 "errore": MESSAGGI_UTENTE["validazione"],
                 "descrizione": errore.messages,
             }, 400
 
-        utente = ModelloUtente.trova_per_nome(dati["nome"])
+        utente = ModelloUtente.trova_per_nome(credenziali.nome)
 
         if utente and CONTESTO_PWD.verify(
-            dati["password"].encode("utf-8"), utente.password
+            credenziali.password.encode("utf-8"), utente.password
         ):
             token_accesso = create_access_token(identity=utente.id, fresh=True)
             token_refresh = create_refresh_token(utente.id)
