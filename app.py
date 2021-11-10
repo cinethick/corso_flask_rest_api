@@ -7,7 +7,14 @@ from db.gestione import database
 from schemi.validazione import validazione
 from risorse.negozio import Negozi, Negozio
 from risorse.oggetto import Oggetto, Oggetti
-from risorse.utente import RegistraUtente, Utente, LoginUtente, LogoutUtente, BLOCKLIST
+from risorse.utente import (
+    RegistraUtente,
+    Utente,
+    LoginUtente,
+    LogoutUtente,
+    BLOCKLIST,
+    ConfermaUtente,
+)
 from risorse.token_refresh import TokenRefresh
 
 app = Flask(__name__)
@@ -120,6 +127,7 @@ api.add_resource(RegistraUtente, "/registra")
 api.add_resource(Utente, "/utente/<int:id_utente>")
 api.add_resource(LoginUtente, "/login")
 api.add_resource(LogoutUtente, "/logout")
+api.add_resource(ConfermaUtente, "/conferma/<int:id_utente>")
 api.add_resource(TokenRefresh, "/refresh")
 
 if __name__ == "__main__":

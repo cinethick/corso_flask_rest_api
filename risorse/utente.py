@@ -27,11 +27,15 @@ MESSAGGI_UTENTE = {
     "duplicato": "E' già presente un utente chiamato {}.",
     "inserito": "Utente inserito correttamente.",
     "inserimento": "Si è verificato un errore inserendo l'utente.",
+    "modificazione": "Si è verificato un errore modificando l'utente.",
     "eliminato": "Utente eliminato.",
     "eliminazione": "Si è verificato un errore eliminando l'utente.",
-    "non_autorizzato": "Azione non autorizzata",
+    "non_autorizzato": "Azione non autorizzata!",
     "credenziali": "Credenziali non valide!",
     "logout": "Logout eseguito correttamente! (Utente ID {})",
+    "attivato": "Utente attivato correttamente! (Utente ID {})",
+    "non_attivato": "Non ha confermato la registrazione. Per piacere verifichi la sua email: {}.",
+    "gia_attivato": "L'utente è già stato attivato. (Utente ID {})",
 }
 
 schema_utente = SchemaUtente()
@@ -93,9 +97,16 @@ class LoginUtente(Resource):
         if utente and CONTESTO_PWD.verify(
             credenziali.password.encode("utf-8"), utente.password
         ):
-            token_accesso = create_access_token(identity=utente.id, fresh=True)
-            token_refresh = create_refresh_token(utente.id)
-            return {"access_token": token_accesso, "refresh_token": token_refresh}, 200
+            if utente.attivato:
+                token_accesso = create_access_token(identity=utente.id, fresh=True)
+                token_refresh = create_refresh_token(utente.id)
+                return {
+                    "access_token": token_accesso,
+                    "refresh_token": token_refresh,
+                }, 200
+
+            return {"errore": MESSAGGI_UTENTE["non_attivato"].format(utente.nome)}, 401
+
         return {"errore": MESSAGGI_UTENTE["credenziali"]}, 401
 
 
@@ -108,3 +119,23 @@ class LogoutUtente(Resource):
         BLOCKLIST.add(jti)
         id_utente = get_jwt_identity()
         return {"messaggio": MESSAGGI_UTENTE["logout"].format(id_utente)}, 200
+
+
+class ConfermaUtente(Resource):
+    @classmethod
+    def get(cls, id_utente: int):
+        utente = ModelloUtente.trova_per_id(id_utente)
+        if utente and not utente.attivato:
+            try:
+                utente.attivato = True
+                utente.salva()
+            except:
+                return {"errore": MESSAGGI_UTENTE["modificazione"]}, 500
+
+            return {"messaggio": MESSAGGI_UTENTE["attivato"].format(id_utente)}
+
+        elif utente and utente.attivato:
+            return {"errore": MESSAGGI_UTENTE["gia_attivato"].format(id_utente)}, 404
+
+        else:
+            return {"errore": MESSAGGI_UTENTE["non_trovato"].format(id_utente)}, 404

@@ -9,6 +9,7 @@ class ModelloUtente(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     nome = database.Column(database.String(80), nullable=False, unique=True)
     password = database.Column(database.String(500), nullable=False)
+    attivato = database.Column(database.Boolean, default=False)
 
     @classmethod
     def trova_per_nome(cls, nome: str) -> "ModelloUtente":
