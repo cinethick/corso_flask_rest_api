@@ -1,5 +1,4 @@
 from flask import request
-from marshmallow import ValidationError
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 
@@ -14,7 +13,6 @@ MESSAGGI_OGGETTO = {
     "eliminato": "Oggetto eliminato.",
     "eliminazione": "Si è verificato un errore eliminando l'oggetto.",
     "credenziali": "I dati completi richiedono l'autenticazione",
-    "validazione": "Errore di validazione dei dati.",
 }
 
 schema_oggetto = SchemaOggetto()
@@ -42,15 +40,9 @@ class Oggetto(Resource):
         if ModelloOggetto.trova_per_nome(nome):
             return {"errore": MESSAGGI_OGGETTO["duplicato"].format(nome)}, 409
 
-        try:
-            json = request.get_json()
-            # json["nome"] = nome # non sicuro che serva
-            oggetto = schema_oggetto.load(json)
-        except ValidationError as errore:
-            return {
-                "errore": MESSAGGI_OGGETTO["validazione"],
-                "descrizione": errore.messages,
-            }, 400
+        json = request.get_json()
+        # json["nome"] = nome # non sicuro che serva
+        oggetto = schema_oggetto.load(json)
 
         try:
             oggetto.salva()
@@ -75,15 +67,9 @@ class Oggetto(Resource):
     @classmethod
     @jwt_required()
     def put(cls, nome):
-        try:
-            json = request.get_json()
-            # json["nome"] = nome # non sicuro che serva
-            nuovo_oggetto = schema_oggetto.load(json)
-        except ValidationError as errore:
-            return {
-                "errore": MESSAGGI_OGGETTO["validazione"],
-                "descrizione": errore.messages,
-            }, 400
+        json = request.get_json()
+        # json["nome"] = nome # non sicuro che serva
+        nuovo_oggetto = schema_oggetto.load(json)
 
         oggetto = ModelloOggetto.trova_per_nome(nome)
 

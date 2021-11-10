@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
+from marshmallow import ValidationError
 
 from db.gestione import database
 from schemi.validazione import validazione
@@ -25,6 +26,14 @@ validazione.init_app(app)
 @app.before_first_request
 def crea_tabelle():
     database.create_all()
+
+
+@app.errorhandler(ValidationError)
+def gestisci_validazione_marshmallow(errore):
+    return {
+        "errore": "Errore di validazione dei dati.",
+        "descrizione": errore.messages,
+    }, 400
 
 
 jwt = JWTManager(app)

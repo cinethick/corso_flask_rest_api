@@ -2,7 +2,6 @@
 Classe utente dell'applicazione
 """
 from flask import request
-from marshmallow import ValidationError
 from flask_jwt_extended import (
     jwt_required,
     create_access_token,
@@ -33,7 +32,6 @@ MESSAGGI_UTENTE = {
     "non_autorizzato": "Azione non autorizzata",
     "credenziali": "Credenziali non valide!",
     "logout": "Logout eseguito correttamente! (Utente ID {})",
-    "validazione": "Errore di validazione dei dati.",
 }
 
 schema_utente = SchemaUtente()
@@ -42,14 +40,8 @@ schema_utente = SchemaUtente()
 class RegistraUtente(Resource):
     @classmethod
     def post(cls):
-        try:
-            json = request.get_json()
-            utente = schema_utente.load(json)
-        except ValidationError as errore:
-            return {
-                "errore": MESSAGGI_UTENTE["validazione"],
-                "descrizione": errore.messages,
-            }, 400
+        json = request.get_json()
+        utente = schema_utente.load(json)
 
         nuovo_hash = CONTESTO_PWD.hash(utente.password.encode("utf-8"))
         utente.password = nuovo_hash
@@ -93,14 +85,8 @@ class Utente(Resource):
 class LoginUtente(Resource):
     @classmethod
     def post(cls):
-        try:
-            json = request.get_json()
-            credenziali = schema_utente.load(json)
-        except ValidationError as errore:
-            return {
-                "errore": MESSAGGI_UTENTE["validazione"],
-                "descrizione": errore.messages,
-            }, 400
+        json = request.get_json()
+        credenziali = schema_utente.load(json)
 
         utente = ModelloUtente.trova_per_nome(credenziali.nome)
 
