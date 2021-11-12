@@ -14,6 +14,7 @@ from flask_jwt_extended import (
 from flask_restful import Resource
 from passlib.context import CryptContext
 
+from libs.mailgun import MailGunException
 from modelli.utente import ModelloUtente
 from schemi.utente import SchemaUtente
 
@@ -70,9 +71,13 @@ class RegistraUtente(Resource):
             return {"errore": MESSAGGI_UTENTE["inserimento"]}, 500
         try:
             utente.invia_conferma_email()
-        except:
+        except MailGunException as errore:
+            utente.elimina()
             traceback.print_exc()
-            return {"errore": MESSAGGI_UTENTE["email_fallita"]}, 500
+            return {
+                "errore": MESSAGGI_UTENTE["email_fallita"],
+                "descrizione": errore,
+            }, 500
 
         return {"messaggio": MESSAGGI_UTENTE["inserito"]}, 201
 
