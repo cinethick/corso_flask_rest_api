@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
@@ -18,13 +20,13 @@ from risorse.utente import (
 from risorse.token_refresh import TokenRefresh
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db/dati.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PROPAGATE_EXCEPTIONS"] = True
 app.config["JWT_BLOCKLIST_ENABLED"] = True
 app.config["JWT_BLOCKLIST_TOKEN_CHECKS"] = ["access", "refresh"]
-app.config["JWT_SECRET_KEY"] = "ChiaveSegretaPerilJWT!!!1!g"
-app.secret_key = "ChiaveSegretaPerlApplicazione!!!1!g"
+app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
+app.secret_key = os.environ.get("APP_SECRET_KEY")
 api = Api(app)
 database.init_app(app)
 validazione.init_app(app)
