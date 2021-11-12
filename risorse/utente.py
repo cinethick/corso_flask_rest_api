@@ -1,7 +1,9 @@
 """
 Classe utente dell'applicazione
 """
-from flask import request
+import traceback
+
+from flask import request, make_response, render_template
 from flask_jwt_extended import (
     jwt_required,
     create_access_token,
@@ -24,12 +26,15 @@ CONTESTO_PWD = CryptContext(
 MESSAGGI_UTENTE = {
     "campo": "Il campo '{}' non può essere lasciato vuoto.",
     "non_trovato": "Non è presente un utente con id {}.",
-    "duplicato": "E' già presente un utente chiamato {}.",
-    "inserito": "Utente inserito correttamente.",
+    "duplicato_nome": "E' già presente un utente chiamato {}.",
+    "duplicato_email": "E' già presente un utente con email {}.",
+    "inserito": "Utente inserito correttamente.\nE' stata inviata una email con il link di attivazione all'indirizzo "
+    "fornito.",
     "inserimento": "Si è verificato un errore inserendo l'utente.",
     "modificazione": "Si è verificato un errore modificando l'utente.",
     "eliminato": "Utente eliminato.",
     "eliminazione": "Si è verificato un errore eliminando l'utente.",
+    "email_fallita": "Si è verificato un errore inviando l'email di attivazione!",
     "non_autorizzato": "Azione non autorizzata!",
     "credenziali": "Credenziali non valide!",
     "logout": "Logout eseguito correttamente! (Utente ID {})",
@@ -51,9 +56,23 @@ class RegistraUtente(Resource):
         utente.password = nuovo_hash
 
         if ModelloUtente.trova_per_nome(utente.nome):
-            return {"errore": MESSAGGI_UTENTE["duplicato"].format(utente.nome)}, 409
+            return {
+                "errore": MESSAGGI_UTENTE["duplicato_nome"].format(utente.nome)
+            }, 409
+        if ModelloUtente.trova_per_email(utente.email):
+            return {
+                "errore": MESSAGGI_UTENTE["duplicato_email"].format(utente.email)
+            }, 409
 
-        utente.salva()
+        try:
+            utente.salva()
+        except:
+            return {"errore": MESSAGGI_UTENTE["inserimento"]}, 500
+        try:
+            utente.invia_conferma_email()
+        except:
+            traceback.print_exc()
+            return {"errore": MESSAGGI_UTENTE["email_fallita"]}, 500
 
         return {"messaggio": MESSAGGI_UTENTE["inserito"]}, 201
 
@@ -90,7 +109,7 @@ class LoginUtente(Resource):
     @classmethod
     def post(cls):
         json = request.get_json()
-        credenziali = schema_utente.load(json)
+        credenziali = schema_utente.load(json, partial=("email",))
 
         utente = ModelloUtente.trova_per_nome(credenziali.nome)
 
@@ -132,7 +151,13 @@ class ConfermaUtente(Resource):
             except:
                 return {"errore": MESSAGGI_UTENTE["modificazione"]}, 500
 
-            return {"messaggio": MESSAGGI_UTENTE["attivato"].format(id_utente)}
+            # return {"messaggio": MESSAGGI_UTENTE["attivato"].format(id_utente)}  # RISPOSTA API
+            # redirect("http://localhost:5000/", code=302)  # REDIRECT A APP FRONTEND
+            return make_response(
+                render_template("conferma.html", email=utente.email),
+                200,
+                {"Content-Type": "text/html"},  # headers
+            )
 
         elif utente and utente.attivato:
             return {"errore": MESSAGGI_UTENTE["gia_attivato"].format(id_utente)}, 404
