@@ -3,7 +3,7 @@ Classe utente dell'applicazione
 """
 import traceback
 
-from flask import request, make_response, render_template
+from flask import request
 from flask_jwt_extended import (
     jwt_required,
     create_access_token,
@@ -15,6 +15,7 @@ from flask_restful import Resource
 from passlib.context import CryptContext
 
 from libs.mailgun import MailGunException
+from modelli.conferma import ModelloConferma
 from modelli.utente import ModelloUtente
 from schemi.utente import SchemaUtente
 
@@ -67,11 +68,15 @@ class RegistraUtente(Resource):
 
         try:
             utente.salva()
+            conferma = ModelloConferma(utente.id)
+            conferma.salva()
         except:
+            utente.elimina()
             return {"errore": MESSAGGI_UTENTE["inserimento"]}, 500
         try:
             utente.invia_conferma_email()
         except MailGunException as errore:
+            conferma.elimina()
             utente.elimina()
             traceback.print_exc()
             return {
@@ -121,7 +126,8 @@ class LoginUtente(Resource):
         if utente and CONTESTO_PWD.verify(
             credenziali.password.encode("utf-8"), utente.password
         ):
-            if utente.attivato:
+            conferma = utente.conferma_piu_recente
+            if conferma and conferma.confermata:
                 token_accesso = create_access_token(identity=utente.id, fresh=True)
                 token_refresh = create_refresh_token(utente.id)
                 return {
@@ -143,29 +149,3 @@ class LogoutUtente(Resource):
         BLOCKLIST.add(jti)
         id_utente = get_jwt_identity()
         return {"messaggio": MESSAGGI_UTENTE["logout"].format(id_utente)}, 200
-
-
-class ConfermaUtente(Resource):
-    @classmethod
-    def get(cls, id_utente: int):
-        utente = ModelloUtente.trova_per_id(id_utente)
-        if utente and not utente.attivato:
-            try:
-                utente.attivato = True
-                utente.salva()
-            except:
-                return {"errore": MESSAGGI_UTENTE["modificazione"]}, 500
-
-            # return {"messaggio": MESSAGGI_UTENTE["attivato"].format(id_utente)}  # RISPOSTA API
-            # redirect("http://localhost:5000/", code=302)  # REDIRECT A APP FRONTEND
-            return make_response(
-                render_template("conferma.html", email=utente.email),
-                200,
-                {"Content-Type": "text/html"},  # headers
-            )
-
-        elif utente and utente.attivato:
-            return {"errore": MESSAGGI_UTENTE["gia_attivato"].format(id_utente)}, 404
-
-        else:
-            return {"errore": MESSAGGI_UTENTE["non_trovato"].format(id_utente)}, 404
