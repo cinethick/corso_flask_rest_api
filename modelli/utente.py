@@ -16,13 +16,13 @@ class ModelloUtente(database.Model):
     email = database.Column(database.String(80), nullable=False, unique=True)
     password = database.Column(database.String(500), nullable=False)
 
-    conferma = database.relationship(
+    conferme = database.relationship(
         "ModelloConferma", lazy="dynamic", cascade="all, delete-orphan"
     )
 
     @property
     def conferma_piu_recente(self) -> "ModelloConferma":
-        return self.conferma.order_by(database.desc(ModelloConferma.scadenza)).first()
+        return self.conferme.order_by(database.desc(ModelloConferma.scadenza)).first()
 
     @classmethod
     def trova_per_nome(cls, nome: str) -> "ModelloUtente":
