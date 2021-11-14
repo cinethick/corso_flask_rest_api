@@ -15,8 +15,8 @@ from risorse.utente import (
     LoginUtente,
     LogoutUtente,
     BLOCKLIST,
-    ConfermaUtente,
 )
+from risorse.conferma import Conferma, ConfermaUtente
 from risorse.token_refresh import TokenRefresh
 
 app = Flask(__name__)
@@ -129,7 +129,8 @@ api.add_resource(RegistraUtente, "/registra")
 api.add_resource(Utente, "/utente/<int:id_utente>")
 api.add_resource(LoginUtente, "/login")
 api.add_resource(LogoutUtente, "/logout")
-api.add_resource(ConfermaUtente, "/conferma/<int:id_utente>")
+api.add_resource(Conferma, "/conferma/<string:id_conferma>")
+api.add_resource(ConfermaUtente, "/conferma/utente/<int:id_utente>")
 api.add_resource(TokenRefresh, "/refresh")
 
 if __name__ == "__main__":
