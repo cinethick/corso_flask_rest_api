@@ -1,7 +1,9 @@
 from flask import request, url_for
 from requests import Response
+
 from db.gestione import database
 from libs.mailgun import invia_email
+from modelli.conferma import ModelloConferma
 
 
 class ModelloUtente(database.Model):
@@ -13,7 +15,14 @@ class ModelloUtente(database.Model):
     nome = database.Column(database.String(80), nullable=False, unique=True)
     email = database.Column(database.String(80), nullable=False, unique=True)
     password = database.Column(database.String(500), nullable=False)
-    attivato = database.Column(database.Boolean, default=False)
+
+    conferma = database.relationship(
+        "ModelloConferma", lazy="dynamic", cascade="all, delete-orphan"
+    )
+
+    @property
+    def conferma_piu_recente(self) -> "ModelloConferma":
+        return self.conferma.order_by(database.desc(ModelloConferma.scadenza)).first()
 
     @classmethod
     def trova_per_nome(cls, nome: str) -> "ModelloUtente":
@@ -28,9 +37,9 @@ class ModelloUtente(database.Model):
         return cls.query.filter_by(id=_id).first()
 
     def invia_conferma_email(self) -> Response:
-        # request.url_root[:-1] = http://127.0.0.1:5000
-        # url_for("confermautente", id_utente=self.id) = /conferma/<self.id>
-        link = request.url_root[:-1] + url_for("confermautente", id_utente=self.id)
+        link = request.url_root[:-1] + url_for(
+            "conferma", id_conferma=self.conferma_piu_recente.id
+        )
         soggetto = (
             "Conferma della registrazione all'applicazione REST Flask by Matteo Paolini"
         )
