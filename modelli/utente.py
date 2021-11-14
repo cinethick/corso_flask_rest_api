@@ -3,6 +3,7 @@ from requests import Response
 
 from db.gestione import database
 from libs.mailgun import invia_email
+from libs.testi import prendi_testo
 from modelli.conferma import ModelloConferma
 
 
@@ -40,19 +41,9 @@ class ModelloUtente(database.Model):
         link = request.url_root[:-1] + url_for(
             "conferma", id_conferma=self.conferma_piu_recente.id
         )
-        soggetto = (
-            "Conferma della registrazione all'applicazione REST Flask by Matteo Paolini"
-        )
-        testo = f"""
-                Buongiorno,
-                Per completare la registrazione vi preghiamo di visitare il seguente link: {link}.
-                        
-                Grazie!
-                """
-        html = f"""<html>Buongiorno,<br>
-                Per completare la registrazione vi preghiamo di visitare <a href="{link}">il seguente link</a>.<br>
-                <br>
-                Grazie!</html>"""
+        soggetto = prendi_testo("conferma_email_soggetto")
+        testo = prendi_testo("conferma_email_testo").format(link)
+        html = prendi_testo("conferma_email_html").format(link)
 
         return invia_email([self.email], soggetto, testo, html)
 

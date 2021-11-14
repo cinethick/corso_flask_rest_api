@@ -2,6 +2,7 @@ from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 
+from libs.testi import prendi_testo
 from modelli.oggetto import ModelloOggetto
 from schemi.oggetto import SchemaOggetto
 
@@ -32,23 +33,22 @@ class Oggetto(Resource):
         oggetto = ModelloOggetto.trova_per_nome(nome)
         if oggetto:
             return schema_oggetto.dump(oggetto)
-        return {"errore": MESSAGGI_OGGETTO["non_trovato"]}, 404
+        return {"errore": prendi_testo("oggetto_non_trovato")}, 404
 
     @classmethod
     @jwt_required()
     def post(cls, nome: str):
         if ModelloOggetto.trova_per_nome(nome):
-            return {"errore": MESSAGGI_OGGETTO["duplicato"].format(nome)}, 409
+            return {"errore": prendi_testo("oggetto_duplicato").format(nome)}, 409
 
         json = request.get_json()
-        # json["nome"] = nome # non sicuro che serva
         oggetto = schema_oggetto.load(json)
 
         try:
             oggetto.salva()
             return schema_oggetto.dump(oggetto), 201
         except:
-            return {"errore": MESSAGGI_OGGETTO["inserimento"]}, 500
+            return {"errore": prendi_testo("oggetto_inserimento")}, 500
 
     @classmethod
     @jwt_required()
@@ -58,17 +58,16 @@ class Oggetto(Resource):
             try:
                 oggetto_esistente.elimina()
             except:
-                return {"errore": MESSAGGI_OGGETTO["eliminazione"]}, 500
+                return {"errore": prendi_testo("oggetto_eliminazione")}, 500
 
-            return {"messaggio": MESSAGGI_OGGETTO["eliminato"]}
+            return {"messaggio": prendi_testo("oggetto_eliminato")}
         else:
-            return {"errore": MESSAGGI_OGGETTO["non_trovato"].format(nome)}, 404
+            return {"errore": prendi_testo("oggetto_non_trovato").format(nome)}, 404
 
     @classmethod
     @jwt_required()
     def put(cls, nome):
         json = request.get_json()
-        # json["nome"] = nome # non sicuro che serva
         nuovo_oggetto = schema_oggetto.load(json)
 
         oggetto = ModelloOggetto.trova_per_nome(nome)
@@ -84,7 +83,7 @@ class Oggetto(Resource):
         try:
             oggetto.salva()
         except:
-            return {"errore": MESSAGGI_OGGETTO["inserimento"]}, 500
+            return {"errore": prendi_testo("oggetto_inserimento")}, 500
 
         return schema_oggetto.dump(oggetto), codice
 
@@ -101,5 +100,5 @@ class Oggetti(Resource):
             return {"oggetti": oggetti}
         return {
             "oggetti": [oggetto["nome"] for oggetto in oggetti],
-            "messaggio": MESSAGGI_OGGETTO["credenziali"],
+            "messaggio": prendi_testo("oggetto_credenziali"),
         }, 200

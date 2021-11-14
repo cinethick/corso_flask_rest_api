@@ -2,17 +2,14 @@ import os
 
 from requests import post, Response
 
+from libs.testi import prendi_testo
+
 MAILGUN = {
     "dominio": os.environ.get("MAILGUN_DOMINIO"),
     "apikey": os.environ.get("MAILGUN_APIKEY"),
     "utente": os.environ.get("MAILGUN_UTENTE"),
     "titolo": os.environ.get("MAILGUN_TITOLO"),
     "email": os.environ.get("MAILGUN_EMAIL"),
-}
-
-MESSAGGI_MAILGUN = {
-    "dominio": "Non è stato possibile caricare il dominio MailGun.",
-    "apikey": "Non è stato possibile caricare la api key di MailGun.",
 }
 
 
@@ -23,10 +20,10 @@ class MailGunException(Exception):
 
 def invia_email(email: list[str], soggetto: str, testo: str, html: str) -> Response:
     if MAILGUN["dominio"] is None:
-        raise MailGunException(MESSAGGI_MAILGUN["dominio"])
+        raise MailGunException(prendi_testo("mailgun_dominio"))
 
     if MAILGUN["apikey"] is None:
-        raise MailGunException(MESSAGGI_MAILGUN["apikey"])
+        raise MailGunException(prendi_testo("mailgun_apikey"))
 
     risposta = post(
         f"https://api.mailgun.net/v3/{MAILGUN['dominio']}/messages",
@@ -42,6 +39,8 @@ def invia_email(email: list[str], soggetto: str, testo: str, html: str) -> Respo
 
     if risposta.status_code != 200:
         raise MailGunException(
-            f"Errore nell'invio della email ({soggetto}): status_code={risposta.status_code}, {risposta.json()}"
+            prendi_testo("mailgun_exception").format(
+                soggetto, risposta.status_code, risposta.json()
+            )
         )
     return risposta

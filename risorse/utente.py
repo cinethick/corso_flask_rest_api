@@ -15,6 +15,7 @@ from flask_restful import Resource
 from passlib.context import CryptContext
 
 from libs.mailgun import MailGunException
+from libs.testi import prendi_testo
 from modelli.conferma import ModelloConferma
 from modelli.utente import ModelloUtente
 from schemi.utente import SchemaUtente
@@ -25,25 +26,6 @@ CONTESTO_PWD = CryptContext(
     default="pbkdf2_sha256",
     pbkdf2_sha256__default_rounds=30000,
 )
-MESSAGGI_UTENTE = {
-    "campo": "Il campo '{}' non può essere lasciato vuoto.",
-    "non_trovato": "Non è presente un utente con id {}.",
-    "duplicato_nome": "E' già presente un utente chiamato {}.",
-    "duplicato_email": "E' già presente un utente con email {}.",
-    "inserito": "Utente inserito correttamente.\nE' stata inviata una email con il link di attivazione all'indirizzo "
-    "fornito.",
-    "inserimento": "Si è verificato un errore inserendo l'utente.",
-    "modificazione": "Si è verificato un errore modificando l'utente.",
-    "eliminato": "Utente eliminato.",
-    "eliminazione": "Si è verificato un errore eliminando l'utente.",
-    "email_fallita": "Si è verificato un errore inviando l'email di attivazione!",
-    "non_autorizzato": "Azione non autorizzata!",
-    "credenziali": "Credenziali non valide!",
-    "logout": "Logout eseguito correttamente! (Utente ID {})",
-    "attivato": "Utente attivato correttamente! (Utente ID {})",
-    "non_attivato": "Non ha confermato la registrazione. Per piacere verifichi la sua email: {}.",
-    "gia_attivato": "L'utente è già stato attivato. (Utente ID {})",
-}
 
 schema_utente = SchemaUtente()
 
@@ -59,11 +41,11 @@ class RegistraUtente(Resource):
 
         if ModelloUtente.trova_per_nome(utente.nome):
             return {
-                "errore": MESSAGGI_UTENTE["duplicato_nome"].format(utente.nome)
+                "errore": prendi_testo("utente_duplicato_nome").format(utente.nome)
             }, 409
         if ModelloUtente.trova_per_email(utente.email):
             return {
-                "errore": MESSAGGI_UTENTE["duplicato_email"].format(utente.email)
+                "errore": prendi_testo("utente_duplicato_email").format(utente.email)
             }, 409
 
         try:
@@ -72,7 +54,7 @@ class RegistraUtente(Resource):
             conferma.salva()
         except:
             utente.elimina()
-            return {"errore": MESSAGGI_UTENTE["inserimento"]}, 500
+            return {"errore": prendi_testo("utente_inserimento")}, 500
         try:
             utente.invia_conferma_email()
         except MailGunException as errore:
@@ -80,11 +62,11 @@ class RegistraUtente(Resource):
             utente.elimina()
             traceback.print_exc()
             return {
-                "errore": MESSAGGI_UTENTE["email_fallita"],
+                "errore": prendi_testo("conferma_email_fallita"),
                 "descrizione": errore,
             }, 500
 
-        return {"messaggio": MESSAGGI_UTENTE["inserito"]}, 201
+        return {"messaggio": prendi_testo("utente_inserito")}, 201
 
 
 class Utente(Resource):
@@ -94,25 +76,25 @@ class Utente(Resource):
         utente = ModelloUtente.trova_per_id(id_utente)
         if utente:
             return schema_utente.dump(utente)
-        return {"errore": MESSAGGI_UTENTE["non_trovato"].format(id_utente)}, 404
+        return {"errore": prendi_testo("utente_non_trovato").format(id_utente)}, 404
 
     @classmethod
     @jwt_required(fresh=True)
     def delete(cls, id_utente: int):
         claims = get_jwt()
         if not claims["admin"]:
-            return {"errore": MESSAGGI_UTENTE["non_autorizzato"]}, 401
+            return {"errore": prendi_testo("non_autorizzato")}, 401
 
         utente = ModelloUtente.trova_per_id(id_utente)
         if utente:
             try:
                 utente.elimina()
             except:
-                return {"errore": MESSAGGI_UTENTE["eliminazione"]}, 500
+                return {"errore": prendi_testo("utente_eliminazione")}, 500
 
-            return {"messaggio": MESSAGGI_UTENTE["eliminato"]}
+            return {"messaggio": prendi_testo("utente_eliminato")}
         else:
-            return {"errore": MESSAGGI_UTENTE["non_trovato"].format(id_utente)}, 404
+            return {"errore": prendi_testo("utente_non_trovato").format(id_utente)}, 404
 
 
 class LoginUtente(Resource):
@@ -135,9 +117,11 @@ class LoginUtente(Resource):
                     "refresh_token": token_refresh,
                 }, 200
 
-            return {"errore": MESSAGGI_UTENTE["non_attivato"].format(utente.nome)}, 401
+            return {
+                "errore": prendi_testo("utente_non_attivato").format(utente.nome)
+            }, 401
 
-        return {"errore": MESSAGGI_UTENTE["credenziali"]}, 401
+        return {"errore": prendi_testo("credenziali")}, 401
 
 
 class LogoutUtente(Resource):
@@ -148,4 +132,4 @@ class LogoutUtente(Resource):
         jti = get_jwt()["jti"]
         BLOCKLIST.add(jti)
         id_utente = get_jwt_identity()
-        return {"messaggio": MESSAGGI_UTENTE["logout"].format(id_utente)}, 200
+        return {"messaggio": prendi_testo("utente_logout").format(id_utente)}, 200

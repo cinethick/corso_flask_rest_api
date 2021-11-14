@@ -1,18 +1,9 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 
+from libs.testi import prendi_testo
 from modelli.negozio import ModelloNegozio
 from schemi.negozio import SchemaNegozio
-
-MESSAGGI_NEGOZIO = {
-    "campo": "Il campo '{}' non può essere lasciato vuoto.",
-    "non_trovato": "Non è presente un negozio chiamato {}.",
-    "duplicato": "E' già presente un negozio chiamato {}.",
-    "inserimento": "Si è verificato un errore inserendo il negozio.",
-    "eliminato": "Negozio eliminato.",
-    "eliminazione": "Si è verificato un errore eliminando il negozio.",
-    "credenziali": "I dati completi richiedono l'autenticazione.",
-}
 
 schema_negozio = SchemaNegozio()
 
@@ -27,20 +18,20 @@ class Negozio(Resource):
         negozio = ModelloNegozio.trova_per_nome(nome)
         if negozio:
             return schema_negozio.dump(negozio)
-        return {"errore": MESSAGGI_NEGOZIO["non_trovato"].format(nome)}, 404
+        return {"errore": prendi_testo("negozio_non_trovato").format(nome)}, 404
 
     @classmethod
     @jwt_required()
     def post(cls, nome: str):
         if ModelloNegozio.trova_per_nome(nome):
-            return {"errore": MESSAGGI_NEGOZIO["duplicato"].format(nome)}, 409
+            return {"errore": prendi_testo("negozio_duplicato").format(nome)}, 409
 
-        nuovo_negozio = ModelloNegozio(nome)  # (nome=nome)?
+        nuovo_negozio = ModelloNegozio(nome)
 
         try:
             nuovo_negozio.salva()
         except:
-            return {"errore": MESSAGGI_NEGOZIO["inserimento"]}, 500
+            return {"errore": prendi_testo("negozio_inserimento")}, 500
 
         return schema_negozio.dump(nuovo_negozio), 201
 
@@ -52,11 +43,11 @@ class Negozio(Resource):
             try:
                 negozio_esistente.elimina()
             except:
-                return {"errore": MESSAGGI_NEGOZIO["eliminazione"]}, 500
+                return {"errore": prendi_testo("negozio_eliminazione")}, 500
 
-            return {"messaggio": MESSAGGI_NEGOZIO["eliminato"]}
+            return {"messaggio": prendi_testo("negozio_eliminato")}
         else:
-            return {"errore": MESSAGGI_NEGOZIO["non_trovato"].format(nome)}, 404
+            return {"errore": prendi_testo("negozio_non_trovato").format(nome)}, 404
 
 
 class Negozi(Resource):
@@ -71,5 +62,5 @@ class Negozi(Resource):
             return {"negozi": negozi}
         return {
             "oggetti": [negozio["nome"] for negozio in negozi],
-            "messaggio": MESSAGGI_NEGOZIO["credenziali"],
+            "messaggio": prendi_testo("credenziali"),
         }, 200

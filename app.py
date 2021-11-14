@@ -6,6 +6,7 @@ from flask_restful import Api
 from marshmallow import ValidationError
 
 from db.gestione import database
+from libs.testi import prendi_testo
 from schemi.validazione import validazione
 from risorse.negozio import Negozi, Negozio
 from risorse.oggetto import Oggetto, Oggetti
@@ -40,8 +41,8 @@ def crea_tabelle():
 @app.errorhandler(ValidationError)
 def gestisci_validazione_marshmallow(errore):
     return {
-        "errore": "Errore di validazione dei dati.",
-        "descrizione": errore.messages,
+        "errore": prendi_testo("app_errore_validazione"),
+        "validazione": errore.messages,
     }, 400
 
 
@@ -57,9 +58,7 @@ def aggiunge_claims_al_jwt(identita: int):
 @jwt.expired_token_loader
 def callback_token_scaduti(jwt_header, jwt_payload):
     return (
-        jsonify(
-            {"errore": "token_scaduto", "errore_descrizione": "Il token è scaduto."}
-        ),
+        jsonify({"errore": prendi_testo("app_errore_token_scaduto")}),
         401,
     )
 
@@ -69,8 +68,7 @@ def callback_token_invalido(errore):
     return (
         jsonify(
             {
-                "errore": "token_invalido",
-                "errore_descrizione": "Verifica della firma fallita.",
+                "errore": prendi_testo("app_errore_token_invalido"),
             }
         ),
         401,
@@ -82,8 +80,7 @@ def callback_token_mancante(errore):
     return (
         jsonify(
             {
-                "errore": "autorizzazione_richiesta",
-                "errore_descrizione": "La richiesta non contiene un token di accesso.",
+                "errore": prendi_testo("app_errore_token_mancante"),
             }
         ),
         401,
@@ -95,8 +92,7 @@ def callback_token_non_fresco(jwt_header, jwt_payload):
     return (
         jsonify(
             {
-                "errore": "richiesto_token_fresco",
-                "errore_descrizione": "Il token non è fresco.",
+                "errore": prendi_testo("app_errore_token_non_fresco"),
             }
         ),
         401,
@@ -108,8 +104,7 @@ def callback_token_revocato(jwt_header, jwt_payload):
     return (
         jsonify(
             {
-                "errore": "token_revocato",
-                "errore_descrizione": "Il token è stato revocato.",
+                "errore": prendi_testo("app_errore_token_revocato"),
             }
         ),
         401,
