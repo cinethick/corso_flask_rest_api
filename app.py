@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from marshmallow import ValidationError
+from dotenv import load_dotenv
 
 from db.gestione import database
 from libs.testi import prendi_testo
@@ -21,13 +22,11 @@ from risorse.conferma import Conferma, ConfermaUtente
 from risorse.token_refresh import TokenRefresh
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["PROPAGATE_EXCEPTIONS"] = True
-app.config["JWT_BLOCKLIST_ENABLED"] = True
-app.config["JWT_BLOCKLIST_TOKEN_CHECKS"] = ["access", "refresh"]
-app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
-app.secret_key = os.environ.get("APP_SECRET_KEY")
+load_dotenv(".env", verbose=True)
+# Carica la configurazione dal file default_config.py
+app.config.from_object("default_config")
+# Carica la configurazione dal file indicato nel file .env alla variabile APPLICATION_SETTINGS
+app.config.from_envvar("APPLICATION_SETTINGS")
 api = Api(app)
 database.init_app(app)
 validazione.init_app(app)
