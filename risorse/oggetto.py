@@ -100,5 +100,5 @@ class Oggetti(Resource):
             return {"oggetti": oggetti}
         return {
             "oggetti": [oggetto["nome"] for oggetto in oggetti],
-            "messaggio": prendi_testo("oggetto_credenziali"),
+            "messaggio": prendi_testo("credenziali"),
         }, 200

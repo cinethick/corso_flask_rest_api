@@ -42,7 +42,6 @@
   "oggetto_inserimento": "Si è verificato un errore inserendo l'oggetto.",
   "oggetto_eliminato": "Oggetto eliminato.",
   "oggetto_eliminazione": "Si è verificato un errore eliminando l'oggetto.",
-  "oggetto_credenziali": "I dati completi richiedono l'autenticazione",
 
   "utente_non_trovato": "Non è presente un utente con id {}.",
   "utente_duplicato_nome": "E' già presente un utente chiamato {}.",
