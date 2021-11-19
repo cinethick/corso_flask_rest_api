@@ -9,6 +9,7 @@
   "campo": "Field '{}' cannot be empty.",
   "non_autorizzato": "Unauthorized action!",
   "credenziali": "Access to the whole data requires authentication.",
+  "estensione_non_permessa": "Extension '{}' is forbidden for the uploaded target file!",
 
   "conferma_non_trovata": "Confirmation code supplied is not valid.",
   "mailgun_dominio": "MailGun domain loading has failed.",
@@ -54,5 +55,7 @@
   "utente_logout": "You logged out successfully! (User ID {})",
   "utente_attivato": "User activated correctly! (User ID {})",
   "utente_non_attivato": "You haven't confirmed you registration. Please check your email: {}.",
-  "utente_gia_attivato": "User has already been activated. (User ID {})"
+  "utente_gia_attivato": "User has already been activated. (User ID {})",
+
+  "upload_immagine": "The image '{}' has been uploaded successfully!"
 }
