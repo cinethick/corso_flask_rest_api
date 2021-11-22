@@ -1,16 +1,20 @@
-import os
-
+from dotenv import load_dotenv
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
+
+# Flask-Uploads da un errore di import. E' necessario installarlo direttamente da GitHub o fixarlo
+from flask_uploads import configure_uploads, patch_request_class
 from marshmallow import ValidationError
-from dotenv import load_dotenv
 
 from db.gestione import database
+from libs.gestione_immagini import SET_IMMAGINI
 from libs.testi import prendi_testo
-from schemi.validazione import validazione
+from risorse.conferma import Conferma, ConfermaUtente
+from risorse.immagine import UploadImmagine
 from risorse.negozio import Negozi, Negozio
 from risorse.oggetto import Oggetto, Oggetti
+from risorse.token_refresh import TokenRefresh
 from risorse.utente import (
     RegistraUtente,
     Utente,
@@ -18,8 +22,7 @@ from risorse.utente import (
     LogoutUtente,
     BLOCKLIST,
 )
-from risorse.conferma import Conferma, ConfermaUtente
-from risorse.token_refresh import TokenRefresh
+from schemi.validazione import validazione
 
 app = Flask(__name__)
 load_dotenv(".env", verbose=True)
@@ -27,6 +30,9 @@ load_dotenv(".env", verbose=True)
 app.config.from_object("default_config")
 # Carica la configurazione dal file indicato nel file .env alla variabile APPLICATION_SETTINGS
 app.config.from_envvar("APPLICATION_SETTINGS")
+patch_request_class(app, 10 * 1024 * 1024)  # limite di upload globale di 10MB
+configure_uploads(app, SET_IMMAGINI)
+
 api = Api(app)
 database.init_app(app)
 validazione.init_app(app)
@@ -126,6 +132,7 @@ api.add_resource(LogoutUtente, "/logout")
 api.add_resource(Conferma, "/conferma/<string:id_conferma>")
 api.add_resource(ConfermaUtente, "/conferma/utente/<int:id_utente>")
 api.add_resource(TokenRefresh, "/refresh")
+api.add_resource(UploadImmagine, "/upload/immagini")
 
 if __name__ == "__main__":
     app.run()
