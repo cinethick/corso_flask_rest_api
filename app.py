@@ -8,6 +8,7 @@ from flask_uploads import configure_uploads, patch_request_class
 from marshmallow import ValidationError
 
 from db.gestione import database
+from flask_migrate import Migrate
 from libs.gestione_immagini import SET_IMMAGINI
 from libs.testi import prendi_testo
 from risorse.conferma import Conferma, ConfermaUtente
@@ -36,6 +37,7 @@ configure_uploads(app, SET_IMMAGINI)
 api = Api(app)
 database.init_app(app)
 validazione.init_app(app)
+migrazione = Migrate(app, database)
 
 
 @app.before_first_request
