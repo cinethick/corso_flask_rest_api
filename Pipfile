@@ -15,6 +15,7 @@ marshmallow-sqlalchemy = "*"
 requests = "*"
 python-dotenv = "*"
 flask-uploads = "*"
+flask-migrate = "*"
 
 [dev-packages]
 black = "*"
