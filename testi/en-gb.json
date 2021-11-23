@@ -10,6 +10,8 @@
   "non_autorizzato": "Unauthorized action!",
   "credenziali": "Access to the whole data requires authentication.",
   "estensione_non_permessa": "Extension '{}' is forbidden for the uploaded target file!",
+  "nome_file_proibito": "File name '{}' is considered illegal for security reasons!",
+  "file_non_trovato": "File name '{}' has not been found!",
 
   "conferma_non_trovata": "Confirmation code supplied is not valid.",
   "mailgun_dominio": "MailGun domain loading has failed.",
@@ -57,5 +59,7 @@
   "utente_non_attivato": "You haven't confirmed you registration. Please check your email: {}.",
   "utente_gia_attivato": "User has already been activated. (User ID {})",
 
-  "upload_immagine": "The image '{}' has been uploaded successfully!"
+  "upload_immagine": "The image '{}' has been uploaded successfully!",
+  "immagine_eliminata": "Image deleted.",
+  "immagine_eliminazione": "An error occurred while deleting the image."
 }

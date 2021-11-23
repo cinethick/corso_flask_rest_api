@@ -9,7 +9,9 @@
   "campo": "Il campo '{}' non può essere lasciato vuoto.",
   "non_autorizzato": "Azione non autorizzata!",
   "credenziali": "I dati completi richiedono l'autenticazione.",
-  "estensione_non_permessa": "L'estensione {} non è permessa per il file trasmesso!",
+  "estensione_non_permessa": "L'estensione '{}' non è permessa per il file trasmesso!",
+  "nome_file_proibito": "Il nome del file '{}' non è permesso per ragioni di sicurezza!",
+  "file_non_trovato": "Il file di nome '{}' non è stato trovato!",
 
   "conferma_non_trovata": "Il codice di conferma non è valido.",
   "mailgun_dominio": "Non è stato possibile caricare il dominio MailGun.",
@@ -57,5 +59,7 @@
   "utente_non_attivato": "Non ha confermato la registrazione. Per piacere verifichi la sua email: {}.",
   "utente_gia_attivato": "L'utente è già stato attivato. (Utente ID {})",
 
-  "upload_immagine": "Upload dell'immagine {} completato con successo!"
+  "upload_immagine": "Upload dell'immagine {} completato con successo!",
+  "immagine_eliminata": "Immagine eliminata.",
+  "immagine_eliminazione": "Si è verificato un errore eliminando l'immagine."
 }

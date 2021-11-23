@@ -11,7 +11,7 @@ from db.gestione import database
 from libs.gestione_immagini import SET_IMMAGINI
 from libs.testi import prendi_testo
 from risorse.conferma import Conferma, ConfermaUtente
-from risorse.immagine import UploadImmagine
+from risorse.immagine import UploadImmagine, Immagine
 from risorse.negozio import Negozi, Negozio
 from risorse.oggetto import Oggetto, Oggetti
 from risorse.token_refresh import TokenRefresh
@@ -133,6 +133,7 @@ api.add_resource(Conferma, "/conferma/<string:id_conferma>")
 api.add_resource(ConfermaUtente, "/conferma/utente/<int:id_utente>")
 api.add_resource(TokenRefresh, "/refresh")
 api.add_resource(UploadImmagine, "/upload/immagini")
+api.add_resource(Immagine, "/immagine/<string:nome_immagine>")
 
 if __name__ == "__main__":
     app.run()

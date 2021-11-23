@@ -1,6 +1,9 @@
+import os
+import traceback
+
 from flask_restful import Resource
 from flask_uploads import UploadNotAllowed
-from flask import request
+from flask import request, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from libs import gestione_immagini
@@ -36,3 +39,43 @@ class UploadImmagine(Resource):
             return {
                 "errore": prendi_testo("estensione_non_permessa").format(estensione)
             }, 400
+
+
+class Immagine(Resource):
+    @jwt_required()
+    def get(self, nome_immagine: str):
+        id_utente = get_jwt_identity()
+        cartella = f"utente_{id_utente}"
+
+        if not gestione_immagini.nome_file_sicuro(nome_immagine):
+            return {
+                "errore": prendi_testo("nome_file_proibito").format(nome_immagine)
+            }, 400
+
+        try:
+            return send_file(gestione_immagini.estrai_percorso(nome_immagine, cartella))
+        except FileNotFoundError:
+            return {
+                "errore": prendi_testo("file_non_trovato").format(nome_immagine)
+            }, 404
+
+    @jwt_required()
+    def delete(self, nome_immagine: str):
+        id_utente = get_jwt_identity()
+        cartella = f"utente_{id_utente}"
+
+        if not gestione_immagini.nome_file_sicuro(nome_immagine):
+            return {
+                "errore": prendi_testo("nome_file_proibito").format(nome_immagine)
+            }, 400
+
+        try:
+            os.remove(gestione_immagini.estrai_percorso(nome_immagine, cartella))
+            return {"messaggio": prendi_testo("immagine_eliminata")}, 200
+        except FileNotFoundError:
+            return {
+                "errore": prendi_testo("file_non_trovato").format(nome_immagine)
+            }, 404
+        except:
+            traceback.print_exc()
+            return {"errore": prendi_testo("immagine_eliminazione")}, 500
