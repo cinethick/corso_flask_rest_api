@@ -12,6 +12,9 @@ class ModelloNegozio(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     nome = database.Column(database.String(80), unique=True, nullable=False)
 
+    titolare_id = database.Column(
+        database.Integer, database.ForeignKey("utenti.id"), nullable=True
+    )
     # Relazione con altra tabella (figli)
     oggetti = database.relationship("ModelloOggetto", lazy="dynamic")
 

@@ -37,7 +37,8 @@ configure_uploads(app, SET_IMMAGINI)
 api = Api(app)
 database.init_app(app)
 validazione.init_app(app)
-migrazione = Migrate(app, database)
+# Aggiunto render_as_batch per gestire le migrazioni con SQLite, eliminare per PostgreSQL
+migrazione = Migrate(app, database, render_as_batch=True)
 
 
 @app.before_first_request
