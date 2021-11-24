@@ -16,6 +16,7 @@ requests = "*"
 python-dotenv = "*"
 flask-uploads = "*"
 flask-migrate = "*"
+flask-oauthlib = "*"
 
 [dev-packages]
 black = "*"
