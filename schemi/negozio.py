@@ -8,6 +8,6 @@ class SchemaNegozio(validazione.SQLAlchemyAutoSchema):
 
     class Meta:
         model = ModelloNegozio
-        dump_only = ("id",)
+        dump_only = ("id", "oggetti")
         include_relationships = True
         load_instance = True

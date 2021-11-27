@@ -12,6 +12,6 @@ class SchemaUtente(validazione.SQLAlchemyAutoSchema):
         load_instance = True
 
     @pre_dump
-    def prima_del_dump(self, utente: ModelloUtente, molti, **kwargs):
+    def prima_del_dump(self, utente: ModelloUtente, **kwargs):
         utente.conferme = [utente.conferma_piu_recente]
         return utente

@@ -48,13 +48,13 @@ class Immagine(Resource):
         id_utente = get_jwt_identity()
         cartella = f"utente_{id_utente}"
 
-        if not gestione_immagini.nome_file_sicuro(nome_immagine):
+        if gestione_immagini.nome_file_sicuro(nome_immagine):
             return {
                 "errore": prendi_testo("nome_file_proibito").format(nome_immagine)
             }, 400
 
         try:
-            return send_file(gestione_immagini.estrai_percorso(nome_immagine, cartella))
+            return send_file(gestione_immagini.trova_immagine(nome_immagine, cartella))
         except FileNotFoundError:
             return {
                 "errore": prendi_testo("file_non_trovato").format(nome_immagine)
@@ -65,13 +65,13 @@ class Immagine(Resource):
         id_utente = get_jwt_identity()
         cartella = f"utente_{id_utente}"
 
-        if not gestione_immagini.nome_file_sicuro(nome_immagine):
+        if gestione_immagini.nome_file_sicuro(nome_immagine):
             return {
                 "errore": prendi_testo("nome_file_proibito").format(nome_immagine)
             }, 400
 
         try:
-            os.remove(gestione_immagini.estrai_percorso(nome_immagine, cartella))
+            os.remove(gestione_immagini.trova_immagine(nome_immagine, cartella))
             return {"messaggio": prendi_testo("immagine_eliminata")}, 200
         except FileNotFoundError:
             return {

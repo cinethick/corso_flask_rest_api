@@ -118,7 +118,7 @@ class LoginUtente(Resource):
                 }, 200
 
             return {
-                "errore": prendi_testo("utente_non_attivato").format(utente.nome)
+                "errore": prendi_testo("utente_non_attivato").format(utente.email)
             }, 401
 
         return {"errore": prendi_testo("credenziali")}, 401

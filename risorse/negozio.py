@@ -26,7 +26,7 @@ class Negozio(Resource):
         if ModelloNegozio.trova_per_nome(nome):
             return {"errore": prendi_testo("negozio_duplicato").format(nome)}, 409
 
-        nuovo_negozio = ModelloNegozio(nome)
+        nuovo_negozio = ModelloNegozio(nome=nome)
 
         try:
             nuovo_negozio.salva()

@@ -42,6 +42,7 @@ class Oggetto(Resource):
             return {"errore": prendi_testo("oggetto_duplicato").format(nome)}, 409
 
         json = request.get_json()
+        json["nome"] = nome
         oggetto = schema_oggetto.load(json)
 
         try:
@@ -52,7 +53,7 @@ class Oggetto(Resource):
 
     @classmethod
     @jwt_required()
-    def delete(cls, nome):
+    def delete(cls, nome: str):
         oggetto_esistente = ModelloOggetto.trova_per_nome(nome)
         if oggetto_esistente:
             try:
@@ -66,8 +67,9 @@ class Oggetto(Resource):
 
     @classmethod
     @jwt_required()
-    def put(cls, nome):
+    def put(cls, nome: str):
         json = request.get_json()
+        json["nome"] = nome
         nuovo_oggetto = schema_oggetto.load(json)
 
         oggetto = ModelloOggetto.trova_per_nome(nome)
