@@ -24,7 +24,7 @@ from risorse.utente import (
     LogoutUtente,
     BLOCKLIST,
 )
-from risorse.login_github import LoginGitHub
+from risorse.login_github import LoginGitHub, AutorizzazioneGitHub
 from schemi.validazione import validazione
 
 app = Flask(__name__)
@@ -143,6 +143,7 @@ api.add_resource(Immagine, "/immagine/<string:nome_immagine>")
 api.add_resource(AvatarUpload, "/upload/avatar")
 api.add_resource(Avatar, "/avatar/<int:id_utente>")
 api.add_resource(LoginGitHub, "/login/github")
+api.add_resource(AutorizzazioneGitHub, "/login/github/authorized")
 
 if __name__ == "__main__":
     app.run()
