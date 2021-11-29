@@ -6,6 +6,7 @@
   "app_errore_token_non_fresco": "This service requires a fresh token. Please refresh your token!",
   "app_errore_token_revocato": "The sent token has been revoked. Please login again.",
 
+  "autenticazione": "Incorrect username or password supplied.",
   "campo": "Field '{}' cannot be empty.",
   "non_autorizzato": "Unauthorized action!",
   "credenziali": "Access to the whole data requires authentication.",
@@ -58,6 +59,7 @@
   "utente_attivato": "User activated correctly! (User ID {})",
   "utente_non_attivato": "You haven't confirmed you registration. Please check your email: {}.",
   "utente_gia_attivato": "User has already been activated. (User ID {})",
+  "password_impostata": "User password has been updated successfully!",
 
   "upload_immagine": "The image '{}' has been uploaded successfully!",
   "immagine_eliminata": "Image deleted.",

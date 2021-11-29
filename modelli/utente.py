@@ -14,8 +14,8 @@ class ModelloUtente(database.Model):
 
     id = database.Column(database.Integer, primary_key=True)
     nome = database.Column(database.String(80), nullable=False, unique=True)
-    email = database.Column(database.String(80), nullable=False, unique=True)
-    password = database.Column(database.String(500), nullable=False)
+    email = database.Column(database.String(80), unique=True)
+    password = database.Column(database.String(500))
 
     conferme = database.relationship(
         "ModelloConferma", lazy="dynamic", cascade="all, delete-orphan"

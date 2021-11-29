@@ -6,6 +6,7 @@
   "app_errore_token_non_fresco": "Per questo servizio è richiesto un token fresco. Eseguire il refresh!",
   "app_errore_token_revocato": "Il token inviato è stato revocato. Eseguire un nuovo Login.",
 
+  "autenticazione": "Il nome utente o la password forniti non sono corretti.",
   "campo": "Il campo '{}' non può essere lasciato vuoto.",
   "non_autorizzato": "Azione non autorizzata!",
   "credenziali": "I dati completi richiedono l'autenticazione.",
@@ -58,6 +59,7 @@
   "utente_attivato": "Utente attivato correttamente! (Utente ID {})",
   "utente_non_attivato": "Non ha confermato la registrazione. Per piacere verifichi la sua email: {}.",
   "utente_gia_attivato": "L'utente è già stato attivato. (Utente ID {})",
+  "password_impostata": "La password dell'utente è stata reimpostata con successo!",
 
   "upload_immagine": "Upload dell'immagine {} completato con successo!",
   "immagine_eliminata": "Immagine eliminata.",

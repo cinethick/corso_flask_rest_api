@@ -23,6 +23,7 @@ from risorse.utente import (
     LoginUtente,
     LogoutUtente,
     BLOCKLIST,
+    ReimpostaPassword,
 )
 from risorse.login_github import LoginGitHub, AutorizzazioneGitHub
 from schemi.validazione import validazione
@@ -133,6 +134,7 @@ api.add_resource(Negozio, "/negozio/<string:nome>")
 api.add_resource(Negozi, "/negozi")
 api.add_resource(RegistraUtente, "/registra")
 api.add_resource(Utente, "/utente/<int:id_utente>")
+api.add_resource(ReimpostaPassword, "/utente/password")
 api.add_resource(LoginUtente, "/login")
 api.add_resource(LogoutUtente, "/logout")
 api.add_resource(Conferma, "/conferma/<string:id_conferma>")
@@ -143,7 +145,9 @@ api.add_resource(Immagine, "/immagine/<string:nome_immagine>")
 api.add_resource(AvatarUpload, "/upload/avatar")
 api.add_resource(Avatar, "/avatar/<int:id_utente>")
 api.add_resource(LoginGitHub, "/login/github")
-api.add_resource(AutorizzazioneGitHub, "/login/github/authorized")
+api.add_resource(
+    AutorizzazioneGitHub, "/login/github/authorized", endpoint="autorizzazione.github"
+)
 
 if __name__ == "__main__":
     app.run()

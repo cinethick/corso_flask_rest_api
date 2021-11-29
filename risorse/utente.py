@@ -105,8 +105,13 @@ class LoginUtente(Resource):
 
         utente = ModelloUtente.trova_per_nome(credenziali.nome)
 
-        if utente and CONTESTO_PWD.verify(
-            credenziali.password.encode("utf-8"), utente.password
+        if (
+            utente
+            and utente.password
+            and credenziali.password
+            and CONTESTO_PWD.verify(
+                credenziali.password.encode("utf-8"), utente.password
+            )
         ):
             conferma = utente.conferma_piu_recente
             if conferma and conferma.confermata:
@@ -121,7 +126,7 @@ class LoginUtente(Resource):
                 "errore": prendi_testo("utente_non_attivato").format(utente.email)
             }, 401
 
-        return {"errore": prendi_testo("credenziali")}, 401
+        return {"errore": prendi_testo("autenticazione")}, 401
 
 
 class LogoutUtente(Resource):
@@ -133,3 +138,35 @@ class LogoutUtente(Resource):
         BLOCKLIST.add(jti)
         id_utente = get_jwt_identity()
         return {"messaggio": prendi_testo("utente_logout").format(id_utente)}, 200
+
+
+class ReimpostaPassword(Resource):
+    @classmethod
+    @jwt_required(fresh=True)
+    def post(cls):
+        json = request.get_json()
+        dati_utente = schema_utente.load(json, partial=("email",))
+        claims = get_jwt()
+
+        if not claims["admin"]:
+            id_utente = get_jwt_identity()
+            utente = ModelloUtente.trova_per_id(id_utente)
+            dati_utente.nome = utente.nome
+        else:
+            utente = ModelloUtente.trova_per_nome(dati_utente.nome)
+
+        if not utente:
+            return {
+                "errore": prendi_testo("utente_non_trovato").format(dati_utente.nome)
+            }, 404
+
+        nuovo_hash = CONTESTO_PWD.hash(dati_utente.password.encode("utf-8"))
+        utente.password = nuovo_hash
+
+        try:
+            utente.salva()
+        except:
+            utente.elimina()
+            return {"errore": prendi_testo("utente_modificazione")}, 500
+
+        return {"messaggio": prendi_testo("password_impostata")}, 201
