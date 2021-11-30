@@ -1,4 +1,5 @@
 from db.gestione import database
+from modelli.ordine import ModelloOrdine, relazione_ordini_oggetti
 
 
 class ModelloOggetto(database.Model):
@@ -17,6 +18,9 @@ class ModelloOggetto(database.Model):
         database.Integer, database.ForeignKey("negozi.id"), nullable=False
     )
     negozio = database.relationship("ModelloNegozio", viewonly=True)
+    ordini = database.relationship(
+        "ModelloOrdine", viewonly=True, secondary=relazione_ordini_oggetti
+    )
 
     @classmethod
     def trova_per_id(cls, _id: int) -> "ModelloOggetto":
