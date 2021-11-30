@@ -63,5 +63,8 @@
 
   "upload_immagine": "Upload dell'immagine {} completato con successo!",
   "immagine_eliminata": "Immagine eliminata.",
-  "immagine_eliminazione": "Si è verificato un errore eliminando l'immagine."
+  "immagine_eliminazione": "Si è verificato un errore eliminando l'immagine.",
+
+  "oggetto_ordine_mancante": "L'oggetto con ID () non è stato trovato!",
+  "ordine_oggetti_mancanti": "Alcuni oggetti inseriti nell'ordine sono inesistenti. L'ordine è stato annullato."
 }

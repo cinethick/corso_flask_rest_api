@@ -16,6 +16,7 @@ from risorse.conferma import Conferma, ConfermaUtente
 from risorse.immagine import UploadImmagine, Immagine, AvatarUpload, Avatar
 from risorse.negozio import Negozi, Negozio
 from risorse.oggetto import Oggetto, Oggetti
+from risorse.ordine import Ordine
 from risorse.token_refresh import TokenRefresh
 from risorse.utente import (
     RegistraUtente,
@@ -148,6 +149,7 @@ api.add_resource(LoginGitHub, "/login/github")
 api.add_resource(
     AutorizzazioneGitHub, "/login/github/authorized", endpoint="autorizzazione.github"
 )
+api.add_resource(Ordine, "/ordine")
 
 if __name__ == "__main__":
     app.run()

@@ -19,7 +19,11 @@ class ModelloOggetto(database.Model):
     negozio = database.relationship("ModelloNegozio", viewonly=True)
 
     @classmethod
-    def trova_per_nome(cls, nome) -> "ModelloOggetto":
+    def trova_per_id(cls, _id: int) -> "ModelloOggetto":
+        return cls.query.filter_by(id=_id).first()
+
+    @classmethod
+    def trova_per_nome(cls, nome: str) -> "ModelloOggetto":
         return cls.query.filter_by(nome=nome).first()
 
     @classmethod

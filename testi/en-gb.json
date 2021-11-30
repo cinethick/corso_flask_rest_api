@@ -63,5 +63,8 @@
 
   "upload_immagine": "The image '{}' has been uploaded successfully!",
   "immagine_eliminata": "Image deleted.",
-  "immagine_eliminazione": "An error occurred while deleting the image."
+  "immagine_eliminazione": "An error occurred while deleting the image.",
+
+  "oggetto_ordine_mancante": "Item with ID () not found!",
+  "ordine_oggetti_mancanti": "Some of the items in the order have not been found. Your order has been cancelled."
 }
