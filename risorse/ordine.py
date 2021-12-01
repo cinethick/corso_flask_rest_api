@@ -1,10 +1,12 @@
+from collections import Counter
+
 from flask import request
 from flask_jwt_extended import jwt_required
 from flask_restful import Resource
 
 from libs.testi import prendi_testo
 from modelli.oggetto import ModelloOggetto
-from modelli.ordine import ModelloOrdine
+from modelli.ordine import ModelloOrdine, OggettiNellOrdine
 
 
 class Ordine(Resource):
@@ -14,13 +16,14 @@ class Ordine(Resource):
         dati = request.get_json()
         oggetti = []
         errori = []
+        quantita_id_oggetti = Counter(dati["id_oggetti"])
 
-        for _id in dati["id_oggetti"]:
+        for _id, quantita in quantita_id_oggetti.most_common():
             oggetto = ModelloOggetto.trova_per_id(_id)
             if not oggetto:
                 errori.append(prendi_testo("oggetto_ordine_mancante").format(_id))
                 continue
-            oggetti.append(oggetto)
+            oggetti.append(OggettiNellOrdine(id_oggetto=_id, quantita=quantita))
 
         if len(errori) > 0:
             return {
