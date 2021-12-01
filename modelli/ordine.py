@@ -1,13 +1,18 @@
 import os
 
 from db.gestione import database
-from modelli.oggetto import ModelloOggetto
 
-relazione_ordini_oggetti = database.Table(
-    "ordini_oggetti",
-    database.Column("id_oggetto", database.Integer, database.ForeignKey("oggetti.id")),
-    database.Column("id_ordine", database.Integer, database.ForeignKey("ordini.id")),
-)
+
+class OggettiNellOrdine(database.Model):
+    __tablename__ = "ordini_oggetti"
+
+    id = database.Column(database.Integer, primary_key=True)
+    id_oggetto = database.Column(database.Integer, database.ForeignKey("oggetti.id"))
+    id_ordine = database.Column(database.Integer, database.ForeignKey("ordini.id"))
+    quantita = database.Column(database.Integer)
+
+    oggetto = database.relationship("ModelloOggetto")
+    ordine = database.relationship("ModelloOrdine", back_populates="oggetti")
 
 
 class ModelloOrdine(database.Model):
@@ -16,9 +21,7 @@ class ModelloOrdine(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     stato = database.Column(database.String(20), nullable=False)
 
-    oggetti = database.relationship(
-        "ModelloOggetto", secondary=relazione_ordini_oggetti, lazy="dynamic"
-    )
+    oggetti = database.relationship("OggettiNellOrdine", back_populates="ordine")
 
     @classmethod
     def trova_tutti(cls) -> list["ModelloOrdine"]:
