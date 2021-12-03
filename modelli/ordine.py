@@ -23,6 +23,32 @@ class ModelloOrdine(database.Model):
 
     oggetti = database.relationship("OggettiNellOrdine", back_populates="ordine")
 
+    @property
+    def descrizione(self) -> str:
+        """
+        Genera una stringa rappresentante l'ordine composto da quantità e nomi degli oggetti
+        """
+        lista_stringhe = [
+            f"- {ogg.quantita} x {ogg.oggetto.nome}" for ogg in self.oggetti
+        ]
+        return "\n".join(lista_stringhe)
+
+    @property
+    def importo(self) -> int:
+        importo_oggetti = [ogg.oggetto.prezzo * ogg.quantita for ogg in self.oggetti]
+        importo_centesimi = sum(importo_oggetti) * 100
+        return int(importo_centesimi)
+
+    def addebita_con_stripe(self, token: str) -> stripe.Charge:
+        stripe.api_key = os.getenv("STRIPE_API_KEY")
+
+        return stripe.Charge.create(
+            amount=self.importo,  # in centesimi
+            currency=os.getenv("VALUTA"),
+            description=self.description,
+            source=token,
+        )
+
     @classmethod
     def trova_tutti(cls) -> list["ModelloOrdine"]:
         return cls.query.all()
