@@ -66,5 +66,6 @@
   "immagine_eliminazione": "An error occurred while deleting the image.",
 
   "oggetto_ordine_mancante": "Item with ID () not found!",
-  "ordine_oggetti_mancanti": "Some of the items in the order have not been found. Your order has been cancelled."
+  "ordine_oggetti_mancanti": "Some of the items in the order have not been found. Your order has been cancelled.",
+  "ordine_errore": "An error occurred while processing the order."
 }

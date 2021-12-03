@@ -43,7 +43,16 @@ class Ordine(Resource):
         ordine.salva()
 
         ordine.imposta_stato("fallito")
-        ordine.addebita_con_stripe(dati["token"])
+
+        try:
+            ordine.addebita_con_stripe(dati["token"])
+            # Stripe ha una libreria per gli errori con dei template della gestione da implementare qui
+        except Exception as err:
+            print(err)
+            return {
+                "errore": prendi_testo("ordine_errore"),
+            }, 500
+
         ordine.imposta_stato("completato")
 
         return schema_ordine.dump(ordine)

@@ -66,5 +66,6 @@
   "immagine_eliminazione": "Si è verificato un errore eliminando l'immagine.",
 
   "oggetto_ordine_mancante": "L'oggetto con ID () non è stato trovato!",
-  "ordine_oggetti_mancanti": "Alcuni oggetti inseriti nell'ordine sono inesistenti. L'ordine è stato annullato."
+  "ordine_oggetti_mancanti": "Alcuni oggetti inseriti nell'ordine sono inesistenti. L'ordine è stato annullato.",
+  "ordine_errore": "Si è verificato un errore nell'ordine, siamo spiacenti."
 }
