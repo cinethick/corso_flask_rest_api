@@ -1,5 +1,7 @@
 import os
 
+import stripe
+
 from db.gestione import database
 
 
