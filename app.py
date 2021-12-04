@@ -14,6 +14,7 @@ from libs.gestione_immagini import SET_IMMAGINI
 from libs.testi import prendi_testo
 from risorse.conferma import Conferma, ConfermaUtente
 from risorse.immagine import UploadImmagine, Immagine, AvatarUpload, Avatar
+from risorse.index import Index
 from risorse.negozio import Negozi, Negozio
 from risorse.oggetto import Oggetto, Oggetti
 from risorse.ordine import Ordine
@@ -129,6 +130,7 @@ def verifica_blocklist(jwt_header, jwt_payload):
     return jwt_payload["jti"] in BLOCKLIST
 
 
+api.add_resource(Index, "/")
 api.add_resource(Oggetto, "/oggetto/<string:nome>")
 api.add_resource(Oggetti, "/oggetti")
 api.add_resource(Negozio, "/negozio/<string:nome>")
