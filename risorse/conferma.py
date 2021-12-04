@@ -1,7 +1,8 @@
+import os
 import traceback
 from time import time
 
-from flask import make_response, render_template
+from flask import make_response, render_template, Response
 from flask_jwt_extended import jwt_required, get_jwt
 from flask_restful import Resource
 
@@ -34,10 +35,10 @@ class Conferma(Resource):
         except:
             return {"errore": prendi_testo("conferma_modificazione")}, 500
 
-        return make_response(
-            render_template("conferma.html", email=conferma.utente.email),
-            200,
-            {"Content-Type": "text/html"},
+        return Response(
+            "conferma.html",
+            titolo=os.getenv("MAILGUN_TITOLO") + " - Conferma account Utente",
+            email=conferma.utente.email,
         )
 
 
