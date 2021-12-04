@@ -29,6 +29,7 @@ from risorse.utente import (
 )
 from risorse.login_github import LoginGitHub, AutorizzazioneGitHub
 from schemi.validazione import validazione
+from viste import vista_base
 
 app = Flask(__name__)
 load_dotenv(".env", verbose=True)
@@ -130,6 +131,7 @@ def verifica_blocklist(jwt_header, jwt_payload):
     return jwt_payload["jti"] in BLOCKLIST
 
 
+# APIs con Flask-Restful
 api.add_resource(Index, "/")
 api.add_resource(Oggetto, "/oggetto/<string:nome>")
 api.add_resource(Oggetti, "/oggetti")
@@ -152,6 +154,9 @@ api.add_resource(
     AutorizzazioneGitHub, "/login/github/authorized", endpoint="autorizzazione.github"
 )
 api.add_resource(Ordine, "/ordine")
+
+# Routing e Blueprints con Flask
+app.register_blueprint(vista_base.blueprint)
 
 if __name__ == "__main__":
     app.run()
