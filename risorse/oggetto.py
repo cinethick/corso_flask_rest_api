@@ -6,16 +6,6 @@ from libs.testi import prendi_testo
 from modelli.oggetto import ModelloOggetto
 from schemi.oggetto import SchemaOggetto
 
-MESSAGGI_OGGETTO = {
-    "campo": "Il campo '{}' non può essere lasciato vuoto.",
-    "non_trovato": "Non è presente un oggetto chiamato {}.",
-    "duplicato": "E' già presente un oggetto chiamato {}.",
-    "inserimento": "Si è verificato un errore inserendo l'oggetto.",
-    "eliminato": "Oggetto eliminato.",
-    "eliminazione": "Si è verificato un errore eliminando l'oggetto.",
-    "credenziali": "I dati completi richiedono l'autenticazione",
-}
-
 schema_oggetto = SchemaOggetto()
 
 
