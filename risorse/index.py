@@ -7,5 +7,5 @@ from flask_restful import Resource
 class Index(Resource):
     @classmethod
     def get(cls):
-        titolo = os.getenv("MAILGUN_TITOLO")
-        return Response(render_template("principali/index.html", titolo=titolo))
+        pagina = {"titolo": os.getenv("MAILGUN_TITOLO")}
+        return Response(render_template("principali/index.html", **pagina))

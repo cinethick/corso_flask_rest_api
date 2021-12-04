@@ -35,13 +35,12 @@ class Conferma(Resource):
         except:
             return {"errore": prendi_testo("conferma_modificazione")}, 500
 
-        return Response(
-            render_template(
-                "risorse/conferma.html",
-                titolo=os.getenv("MAILGUN_TITOLO") + " - Conferma account Utente",
-                email=conferma.utente.email,
-            )
-        )
+        pagina = {
+            "titolo": os.getenv("MAILGUN_TITOLO") + " - Conferma account Utente",
+            "email": conferma.utente.email,
+        }
+
+        return Response(render_template("risorse/conferma.html", **pagina))
 
 
 class ConfermaUtente(Resource):
