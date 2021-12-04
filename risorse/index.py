@@ -8,4 +8,4 @@ class Index(Resource):
     @classmethod
     def get(cls):
         titolo = os.getenv("MAILGUN_TITOLO")
-        return Response(render_template("index.html", titolo=titolo))
+        return Response(render_template("principali/index.html", titolo=titolo))
