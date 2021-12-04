@@ -1,0 +1,29 @@
+{% extends "comuni/_layout.html" %}
+{% block contenuto %}
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-md-6 position-absolute top-50 start-50 translate-middle rounded-3">
+                <h1 class="mb-3">Registrati</h1>
+                <form action="" method="post">
+                    <div class="mb-3">
+                        <label for="form_email" class="form-label">Indirizzo email</label>
+                        <input type="email" class="form-control" id="form_email" aria-describedby="emailHelp">
+                        <div id="emailHelp" class="form-text">Non condivideremo la tua email con nessun altro.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="form_password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="form_password">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                        <label class="form-check-label" for="exampleCheck1">Voglio registrarmi</label>
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Registrami</button>
+                        <span class="ms-1"> oppure <a class="link-primary" href="/login">Accedi</a></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

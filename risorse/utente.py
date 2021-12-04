@@ -1,9 +1,10 @@
 """
 Classe utente dell'applicazione
 """
+import os
 import traceback
 
-from flask import request
+from flask import request, Response, render_template
 from flask_jwt_extended import (
     jwt_required,
     create_access_token,
@@ -31,6 +32,11 @@ schema_utente = SchemaUtente()
 
 
 class RegistraUtente(Resource):
+    @classmethod
+    def get(cls):
+        pagina = {"titolo": os.getenv("MAILGUN_TITOLO")}
+        return Response(render_template("principali/registra.html", **pagina))
+
     @classmethod
     def post(cls):
         json = request.get_json()
@@ -98,6 +104,11 @@ class Utente(Resource):
 
 
 class LoginUtente(Resource):
+    @classmethod
+    def get(cls):
+        pagina = {"titolo": os.getenv("MAILGUN_TITOLO")}
+        return Response(render_template("principali/login.html", **pagina))
+
     @classmethod
     def post(cls):
         json = request.get_json()
