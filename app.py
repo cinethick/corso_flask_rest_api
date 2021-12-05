@@ -132,15 +132,15 @@ def verifica_blocklist(jwt_header, jwt_payload):
 
 
 # APIs con Flask-Restful
-api.add_resource(Index, "/")
+api.add_resource(Index, "/", endpoint="index")
 api.add_resource(Oggetto, "/oggetto/<string:nome>")
 api.add_resource(Oggetti, "/oggetti")
 api.add_resource(Negozio, "/negozio/<string:nome>")
 api.add_resource(Negozi, "/negozi")
-api.add_resource(RegistraUtente, "/registra")
+api.add_resource(RegistraUtente, "/registra", endpoint="registra")
 api.add_resource(Utente, "/utente/<int:id_utente>")
 api.add_resource(ReimpostaPassword, "/utente/password")
-api.add_resource(LoginUtente, "/login")
+api.add_resource(LoginUtente, "/login", endpoint="login")
 api.add_resource(LogoutUtente, "/logout")
 api.add_resource(Conferma, "/conferma/<string:id_conferma>")
 api.add_resource(ConfermaUtente, "/conferma/utente/<int:id_utente>")
