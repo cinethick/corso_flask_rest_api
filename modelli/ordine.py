@@ -1,3 +1,4 @@
+import datetime
 import os
 
 import stripe
@@ -22,6 +23,7 @@ class ModelloOrdine(database.Model):
 
     id = database.Column(database.Integer, primary_key=True)
     stato = database.Column(database.String(20), nullable=False)
+    data_creazione = database.Column(database.DateTime, default=datetime.datetime.now)
 
     oggetti = database.relationship("OggettiNellOrdine", back_populates="ordine")
 
