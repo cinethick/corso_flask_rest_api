@@ -6,13 +6,20 @@
                 <h1 class="mb-3">Registrati</h1>
                 <form action="" method="post">
                     <div class="mb-3">
+                        <label for="form_nome" class="form-label">Nome utente</label>
+                        <input type="text" name="nome" class="form-control" id="form_nome" required
+                               placeholder="nome_utente">
+                    </div>
+                    <div class="mb-3">
                         <label for="form_email" class="form-label">Indirizzo email</label>
-                        <input type="email" class="form-control" id="form_email" aria-describedby="emailHelp">
+                        <input type="email" name="email" class="form-control" id="form_email" aria-describedby="emailHelp" required
+                               placeholder="latua@email.com">
                         <div id="emailHelp" class="form-text">Non condivideremo la tua email con nessun altro.</div>
                     </div>
                     <div class="mb-3">
                         <label for="form_password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="form_password">
+                        <input type="password" name="password" class="form-control" id="form_password" required
+                               placeholder="latuaPassword!11">
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="exampleCheck1">
