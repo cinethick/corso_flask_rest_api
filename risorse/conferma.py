@@ -94,7 +94,7 @@ class ConfermaUtente(Resource):
             traceback.print_exc()
             return {
                 "errore": prendi_testo("conferma_email_fallita"),
-                "descrizione": errore,
+                "descrizione": str(errore),
             }, 500
         except:
             return {
